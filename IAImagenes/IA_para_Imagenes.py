@@ -38,7 +38,7 @@ st.title('Por favor sube una imagen para hacer detección/calificación')
 with st.spinner('Por favor, espera que tu modelo esta cargando'):   
     yolo = YOLO_Pred(onnx_model='./models/best.onnx',
                     data_yaml='./models/data.yml')
-    st.balloons()
+    
 
 #Subir imagen
 def subir_imagen():

@@ -42,4 +42,4 @@ st.markdown('<p style="display: block;  font-size: 25px;  font-weight:bold; colo
 st.write('''El producto Sistema de Soldadura tiene inteligencia artificial ("IA"). Este es desarrollado por SMARTEST. La funcionalidad de la IA esta especificada en las características del producto o servicio. Las funciones de IA utilizan la información que el sistema recopila para mejorar los servicios que te proporcionamos o para mejorar la asistencia que te ofrecemos en relación con las operaciones del sistema.''')
 
 st.write('')
-st.markdown('<p style="display: block; text-align:center; font-size: 22px;  font-weight:bold;  text-align:center;color: #000;">El Sistema de Soldadura es creado por los SMARTEST.</p>', unsafe_allow_html=True)
+st.markdown('<p style="display: block; text-align:center; font-size: 22px;  font-weight:bold;  text-align:center;color: #000;">El Sistema de Soldadura es creado por SMARTEST.</p>', unsafe_allow_html=True)
