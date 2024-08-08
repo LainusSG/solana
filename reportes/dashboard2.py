@@ -14,67 +14,15 @@ warnings.filterwarnings('ignore')
 today = datetime.datetime.now()
 today2 = today.strftime("%d/%m/%Y")
 
-
-
-st.set_page_config(page_title="Solana.IA", page_icon=":large_blue_diamond:",layout="wide")
-
-st.markdown("""
-<style>.element-container:has(#button-after) + 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Koulen&family=Lato&family=Nunito&family=Playfair+Display:ital@1&family=Prata&family=Raleway:ital,wght@1,100&family=Roboto&family=Roboto+Condensed&family=Teko&display=swap')
-button {
-padding: 10px 30px;
-
- }
- 
- button:hover {
-     
-    transition : 1000ms;
-    padding: 10px 30px;
-    transform : translateY(-0px);
-    background-color: #fff;
-    color: black;
-    border: solid 2px #FF8000;
-}</style>""", unsafe_allow_html=True)
-
-
-
-
-
-def sidebar_bg(side_bg):
-
-   side_bg_ext = 'jpeg'
-
-   st.markdown(
-      f"""
-      <style>
-      [data-testid="stSidebar"] > div:first-child {{
-          background: url(data:image/{side_bg_ext};base64,{base64.b64encode(open(side_bg, "rb").read()).decode()});
-      }}
-      </style>
-      """,
-      unsafe_allow_html=True,
-      )
-
-side_bg = 'photo-1507497806295-753c4108560c-5.jpeg'
-sidebar_bg(side_bg)
-
-
-
-
-
-
-col1, col2, col3 = st.columns(3)
-
+st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
+st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;  margin-top:-2rem;  color: #000;font-weight: bold;"> Usuario: {st.session_state["name"]}</p>', unsafe_allow_html=True)
+col1, col2,col3 = st.columns((3))
 with col1:
-    st.write(' ')
-
+    st.write("")
 with col2:
-    st.image('TM2.gif',caption=None, width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
-
-
+    st.image('reportes/TM2.gif',caption=None, width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
 with col3:
-    st.write(' ')
-
+    st.write("")
 
 # fl = st.file_uploader(":file_folder: Subir Archivo!",type=(["csv","txt","xlsx","xls"]))
 # if fl is not None:
@@ -82,25 +30,11 @@ with col3:
 #     st.write(filename)
 #     df = pd.read_csv(filename, encoding = "ISO-8859-1")
 # else:
-    os.chdir(r"/Users/casho/Documents/SMARTEST/Proyectos/CalidadSoldadura/soldadura/DashboardIA")
-    df = pd.read_csv("Graficas.csv", encoding = "ISO-8859-1")
+    #os.chdir(r"reportes")
+df = pd.read_csv("reportes/Graficas.csv", encoding = "ISO-8859-1")
 
 
-    
-########################################################################################   
 
-st.sidebar.header("Choose your filter: ")    
-
-st.logo("LOGOS JUNTOS.png")
-
-
-st.html("""
-  <style>
-    [alt=Logo] {
-      height: 5rem;
-    }
-  </style>
-        """)
 ########################################################################################   
     
 col1, col2 = st.columns((2))
@@ -174,21 +108,35 @@ category2_df = filtered_df.groupby(by = ["Obra"], as_index = False)["Fallas"].su
 with st.expander("Fallas en Obras"):
     fig12 = px.bar(category2_df, x = "Obra", y = "Fallas", text = [x for x in category2_df["Fallas"]],
                     template ="ggplot2")
+    fig12.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig12.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig12,use_container_width=True, height = 200)
     
 col1, col2= st.columns((2))
 
 
 with col1:
-    st.subheader("Fallas por Pieza")
-    fig1 = px.bar(category_df, x = "Tipo de Pieza", y = "Fallas", text = [x for x in category_df["Fallas"]],
-                 template ="ggplot2")
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Pieza</p>', unsafe_allow_html=True)
+    fig1 = px.bar(category_df, x = "Tipo de Pieza", y = "Fallas", text = [x for x in category_df["Fallas"]])
+    fig1.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig1.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig1,use_container_width=True, height = 200)
 
 with col2:
-    st.subheader("Fallas por Tipo de Soldadura")
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Fallas por Tipo de Soldadura</p>', unsafe_allow_html=True)
     fig2 = px.pie(filtered_df, values = "Fallas", names = "Tipo de Soldadura", hole = 0.5, template ="presentation")
     fig2.update_traces(text = filtered_df["Categoria"], textposition = "outside")
+    fig2.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    
     st.plotly_chart(fig2,use_container_width=True)
 
 # Create a treem based on Region, category, sub-Category
@@ -196,15 +144,23 @@ with col2:
 
 chart1, chart2 = st.columns((2))
 with chart1:
-    st.subheader("Fallas por Pieza")
-    fig3 = px.pie(filtered_df, values = "Fallas", names = "Tipo de Pieza", template = "plotly_white")
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Pieza</p>', unsafe_allow_html=True)
+    fig3 = px.pie(filtered_df, values = "Fallas", names = "Tipo de Pieza", template ="presentation")
     fig3.update_traces(text = filtered_df["Tipo de Pieza"], textposition = "inside")
+    fig3.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
     st.plotly_chart(fig3,use_container_width=True)
 
 with chart2:
-    st.subheader("Fallas por Tipo de Soldadura")
-    fig4 = px.pie(filtered_df, values = "Fallas", names = "Tipo de Soldadura", template = "gridon")
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Tipo de Soldadura</p>', unsafe_allow_html=True)
+    fig4 = px.pie(filtered_df, values = "Fallas", names = "Tipo de Soldadura", template ="presentation")
     fig4.update_traces(text = filtered_df["Tipo de Fallas"], textposition = "inside")
+    fig4.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
     st.plotly_chart(fig4,use_container_width=True)
 
 ########################################################################################   
@@ -238,10 +194,15 @@ col1, col2 = st.columns((2))
 ########################################################################################           
 with col1:
     filtered_df["Año"] = filtered_df["Fecha"].dt.to_period("Y")
-    st.subheader('Fallas por Año')
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Año</p>', unsafe_allow_html=True)
 
     linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Año"].dt.strftime("%Y : %b"))["Fallas"].sum()).reset_index()
     fig5 = px.line(linechart, x = "Año", y="Fallas", labels = {"Fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    fig5.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig5.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig5,use_container_width=True)
 
     with st.expander("Fallas Por Año"):
@@ -255,10 +216,15 @@ with col1:
 ########################################################################################           
 with col2:
     filtered_df["Mes"] = filtered_df["Fecha"].dt.to_period("M")
-    st.subheader('Fallas por Mes')
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Mes</p>', unsafe_allow_html=True)
 
     linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Mes"].dt.strftime("%Y : %b"))["Fallas"].sum()).reset_index()
     fig6 = px.line(linechart, x = "Mes", y="Fallas", labels = {"Fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    fig6.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig6.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig6,use_container_width=True)
 
     with st.expander("Fallas Por Mes"):
@@ -269,37 +235,58 @@ with col2:
 
 
 ########################################################################################   
-st.subheader("Fallas")
+st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas</p>', unsafe_allow_html=True)
 fig7 = px.treemap(filtered_df, path = ["Categoria","Tipo de Fallas","Tipo de Pieza", "Calificacion"], values = "Fallas",hover_data = ["Fallas"],template="presentation")
 fig7.update_layout(width = 800, height = 800)
+fig7.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
 st.plotly_chart(fig7, use_container_width=True)
 
 
 ########################################################################################   
 
-st.subheader("Tabla de datos ")
+st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Tabla de Datos</p>', unsafe_allow_html=True)
 with st.expander("Reporte de Obra"):
     df_sample = filtered_df[["Obra","Tipo de Pieza","Tipo de Soldadura","Tipo de Fallas","Categoria","Calificacion"]]
     fig8 = ff.create_table(df_sample, colorscale = "hot")
+    fig8.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
     st.plotly_chart(fig8, use_container_width=True)
 
 
 
 ######################################################################################## 
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+col1, col2, col3, col4, col5 = st.columns([1,1,1,1,1]) 
+with col1:
+    st.write("")
+with col2:
+    csv = df.to_csv(index = False).encode('utf-8')
+    st.download_button('Descargar Archivo', data = csv, file_name = "Data.csv",mime = "text/csv")
+with col3:
+    st.write("")
+with col4:
+    export_as_pdf = st.button("Reporte Cliente")
+with col5:
+    st.write("")
 
-csv = df.to_csv(index = False).encode('utf-8')
-st.download_button('Descargar Archivo', data = csv, file_name = "Data.csv",mime = "text/csv")
-export_as_pdf = st.button("Reporte Cliente")
 
 
-
-fig1.write_image("images/fig1.png")
-fig2.write_image("images/fig2.png")
-fig3.write_image("images/fig3.png")
-fig4.write_image("images/fig4.png")
-fig5.write_image("images/fig5.png")
-fig6.write_image("images/fig6.png")
-fig8.write_image("images/fig7.png")
+fig1.write_image("reportes/images/fig1.png")
+fig2.write_image("reportes/images/fig2.png")
+fig3.write_image("reportes/images/fig3.png")
+fig4.write_image("reportes/images/fig4.png")
+fig5.write_image("reportes/images/fig5.png")
+fig6.write_image("reportes/images/fig6.png")
+fig8.write_image("reportes/images/fig7.png")
 
 
 
@@ -316,8 +303,8 @@ if export_as_pdf:
         # Page footer
         def header(self):
             # Position at 1.5 cm from bottom
-            self.image('images/Encabezado.png',0, 10, 225, 0, 'PNG')
-            self.ln(16)
+            self.image('reportes/images/ENCABEZADOSOLANA.png',0, 0, 215, 0, 'PNG')
+            self.ln(34)
             self.set_font('Arial', 'B', 10)
             self.cell(35, 10, 'Nombre de la Obra:',0,0,'L')
             self.set_font('Arial', 'I', 10)
@@ -337,7 +324,7 @@ if export_as_pdf:
             self.cell(20, 10, str(today3) ,0,0,'L')
             self.cell(6, 10, ' - ' ,0,0,'L')
             self.cell(20, 10, str(today4) ,0,0,'L')
-            pdf.ln(16)
+            pdf.ln(10)
             
         def footer(self):
             # Position at 1.5 cm from bottom
@@ -359,20 +346,20 @@ if export_as_pdf:
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(190, 10, 'Fallas por Pieza',0,0,'L')
     pdf.ln(8)
-    pdf.image('images/fig1.png', 20, 67, 90, 0, 'PNG')
-    pdf.image('images/fig3.png', 100, 67, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig1.png', 20, 77, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig3.png', 100, 77, 90, 0, 'PNG')
     
     
     pdf.ln(65)
     pdf.cell(190, 10, 'Fallas por Tipo de Soldadura',0,0,'L')
-    pdf.image('images/fig2.png', 20, 140, 90, 0, 'PNG')
-    pdf.image('images/fig4.png', 105, 140, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig2.png', 20, 150, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig4.png', 105, 150, 90, 0, 'PNG')
     
     
     pdf.ln(70)
     pdf.cell(190, 10, 'Fallas por Año y Mes',0,0,'L')
-    pdf.image('images/fig5.png', 20, 208, 90, 0, 'PNG')
-    pdf.image('images/fig6.png', 105, 208, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig5.png', 20, 220, 90, 0, 'PNG')
+    pdf.image('reportes/images/fig6.png', 105, 220, 90, 0, 'PNG')
     
     
     
@@ -413,3 +400,12 @@ if export_as_pdf:
 
 
     st.markdown(html, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
