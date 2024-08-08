@@ -12,6 +12,18 @@ import base64
 st.set_page_config(page_title="SolanaIA", page_icon="reportes/lluvia.ico", layout="wide")
 
 
+custom_css = """
+<style>
+ [alt=Logo] {
+      height: 5rem;
+    }
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
+
+st.logo("reportes/LOGOS JUNTOS.png")
+
+
 # Pass the list of passwords directly to the 
 # Hasher constructor and generate the hashes
 # passwords_to_hash = ['fashion@123', 'increff@fashion']
@@ -59,8 +71,26 @@ IAVideo = st.Page(
     "IAVideo/IA_para_videos.py", title="IA para procesar videos", icon=":material/bug_report:"
 )
 About = st.Page(
-    "About.py", title="Acerca de Nosotros", icon=":material/home:"
+    "About.py", title="Acerca de", icon=":material/home:"
 )
+
+
+custom_css = """
+<style>
+div.stButton button {
+    background-color: white;
+    color:#000;
+    width: 200px;
+}
+
+div.stButton button:hover {
+    background-color: white ;
+    color:#FF5000;
+    width: 200px;
+}
+</style>
+"""
+st.markdown(custom_css, unsafe_allow_html=True)
 
 if st.session_state["authentication_status"]:
     authenticator.logout('Salir', 'sidebar', key='unique_key')
@@ -80,13 +110,16 @@ if st.session_state["authentication_status"]:
         )
         pg.run()
     elif username == 'solana':
-        st.markdown(f'<p class="big-font">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="display: block; text-align:center; font-size: 32px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
+        
         #st.title('Usuario')
         pg = st.navigation(
         {
+            "Inicio":[bienvenida],
             "IAImagenes": [IAImagenes],
             "Reportes": [Dashboard],
             "IAVideo": [IAVideo],
+            "About":[About]
         }
         )
         pg.run()
@@ -106,15 +139,6 @@ with open('style.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
-st.logo("reportes/LOGOS JUNTOS.png")
-
-st.html("""
-  <style>
-    [alt=Logo] {
-      height: 5rem;
-    }
-  </style>
-        """)
 
 
 ##################################################################################################################################################################
