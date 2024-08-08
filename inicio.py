@@ -22,7 +22,18 @@ custom_css = """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 st.logo("reportes/LOGOS JUNTOS.png")
-
+st.markdown(
+    r"""
+    <style>
+    .stDeployButton {
+            visibility: hidden;
+        }
+        .stMenuButton {
+            visibility: hidden;
+        }
+    </style>
+    """, unsafe_allow_html=True
+)
 
 # Pass the list of passwords directly to the 
 # Hasher constructor and generate the hashes
@@ -31,16 +42,6 @@ st.logo("reportes/LOGOS JUNTOS.png")
 
 # print(hashed_passwords)
 
-st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
-
-
-col1, col2,col3 = st.columns((3))
-with col1:
-    st.write("")
-with col2:
-    st.image('reportes/TM2.gif',caption=None, width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
-with col3:
-    st.write("")
 
 
 with open('config.yaml') as file:
@@ -96,7 +97,7 @@ if st.session_state["authentication_status"]:
     authenticator.logout('Salir', 'sidebar', key='unique_key')
 
     if username == 'casho':
-        st.markdown(f'<p style="display: block; text-align:center; font-size: 32px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
+        
         
         #st.title('Admin Casho')
         pg = st.navigation(
@@ -110,7 +111,7 @@ if st.session_state["authentication_status"]:
         )
         pg.run()
     elif username == 'solana':
-        st.markdown(f'<p style="display: block; text-align:center; font-size: 32px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
+        #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
         
         #st.title('Usuario')
         pg = st.navigation(

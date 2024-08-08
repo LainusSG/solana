@@ -9,6 +9,8 @@ import streamlit as st
 with open('style2.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
+
 
 st.write('Sistema de Soldadura Versión. 1.1')
 st.write('Copyright © 2023-2024, SMARTEST - El equipo de desarrollo del Sistema de Soldadura.')

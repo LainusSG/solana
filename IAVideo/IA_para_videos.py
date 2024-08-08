@@ -4,9 +4,21 @@ import av
 from yolo_prediccion import YOLO_Pred
 import datetime
 
+st.markdown('<style>div.block-container{padding-top:1rem;}</style>',unsafe_allow_html=True)
+st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;  margin-top:-2rem;  color: #000;font-weight: bold;"> Usuario: {st.session_state["name"]}</p>', unsafe_allow_html=True)
+col1, col2,col3 = st.columns((3))
+with col1:
+    st.write("")
+with col2:
+    st.image('reportes/TM2.gif',caption=None, width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+with col3:
+    st.write("")
+
+
 
 yolo = YOLO_Pred('./models/best.onnx',
                   './models/data.yml')
+
 
 fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
 
