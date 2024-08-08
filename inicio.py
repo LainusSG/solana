@@ -62,17 +62,17 @@ bienvenida = st.Page(
     "bienvenida.py", title="Inicio", icon=":material/home:", default=True
 )
 IAImagenes = st.Page(
-    "IAImagenes/IA_para_Imagenes.py", title="IA para Imagenes", icon=":material/search:"
+    "IAImagenes/IA_para_Imagenes.py", title="IA para Imagenes", icon=":material/image:"
 )
 Dashboard = st.Page(
     "reportes/dashboard.py", title="Dashboard", icon=":material/dashboard:"
 )
 
 IAVideo = st.Page(
-    "IAVideo/IA_para_videos.py", title="IA para procesar videos", icon=":material/bug_report:"
+    "IAVideo/IA_para_videos.py", title="IA para procesar videos", icon=":material/camera:"
 )
 About = st.Page(
-    "About.py", title="Acerca de", icon=":material/home:"
+    "About.py", title="Acerca de", icon=":material/search:"
 )
 
 
@@ -104,8 +104,8 @@ if st.session_state["authentication_status"]:
         {
             "Inicio":[bienvenida],
             "IAImagenes": [IAImagenes],
-            "Reportes": [Dashboard],
             "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
             "About":[About]
         }
         )
@@ -118,8 +118,8 @@ if st.session_state["authentication_status"]:
         {
             "Inicio":[bienvenida],
             "IAImagenes": [IAImagenes],
-            "Reportes": [Dashboard],
             "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
             "About":[About]
         }
         )
