@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import webrtc_streamer, RTCConfiguration
 import av
 from yolo_prediccion import YOLO_Pred
 import datetime
@@ -29,6 +29,11 @@ Pieza = title = st.text_input("Tipo de Pieza", "")
 Categoria = title = st.text_input("Categoría", "")
 
 Soldadura = title = st.text_input("Tipo de Soldadura", "")
+
+
+RTC_CONFIGURATION = RTCConfiguration(
+    {"iceServers": [{"urls":["stun:stun.l.google.com:19302"]}]}
+)
 
 
 def video_frame_callback(frame):
