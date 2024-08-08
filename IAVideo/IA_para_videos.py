@@ -2,9 +2,22 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer
 import av
 from yolo_prediccion import YOLO_Pred
+import datetime
+
 
 yolo = YOLO_Pred('./models/best.onnx',
                   './models/data.yml')
+
+fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+
+obra = title = st.text_input("Obra", "")
+
+Pieza = title = st.text_input("Tipo de Pieza", "")
+
+Categoria = title = st.text_input("Categoría", "")
+
+Soldadura = title = st.text_input("Tipo de Soldadura", "")
+
 
 def video_frame_callback(frame):
     img = frame.to_ndarray(format="bgr24")

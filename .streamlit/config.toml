@@ -1,12 +1,5 @@
 [theme]
-primaryColor = "#F63366"
-backgroundColor = "rgba(254,248,239,1)" # sepia yellow
-
-# st.text_input, st.date_input.
-secondaryBackgroundColor =  "rgba(254,200,239,1)" # sepia yellow
-
-# Font color for the page.
-textColor = "#000000" # grey
-
-
-font = "roboto"
+base="light"
+primaryColor="#f63366"
+secondaryBackgroundColor="#f5aa57"
+textColor="#020202"

@@ -45,16 +45,21 @@ authenticator = stauth.Authenticate(
 )
 name, authentication_status, username = authenticator.login()
 
-
+bienvenida = st.Page(
+    "bienvenida.py", title="Inicio", icon=":material/home:", default=True
+)
 IAImagenes = st.Page(
     "IAImagenes/IA_para_Imagenes.py", title="IA para Imagenes", icon=":material/search:"
 )
 Dashboard = st.Page(
-    "reportes/dashboard.py", title="Dashboard", icon=":material/dashboard:", default=True
+    "reportes/dashboard.py", title="Dashboard", icon=":material/dashboard:"
 )
 
 IAVideo = st.Page(
     "IAVideo/IA_para_videos.py", title="IA para procesar videos", icon=":material/bug_report:"
+)
+About = st.Page(
+    "About.py", title="Acerca de Nosotros", icon=":material/home:"
 )
 
 if st.session_state["authentication_status"]:
@@ -66,9 +71,11 @@ if st.session_state["authentication_status"]:
         #st.title('Admin Casho')
         pg = st.navigation(
         {
+            "Inicio":[bienvenida],
             "IAImagenes": [IAImagenes],
             "Reportes": [Dashboard],
             "IAVideo": [IAVideo],
+            "About":[About]
         }
         )
         pg.run()
@@ -95,6 +102,8 @@ elif st.session_state["authentication_status"] is None:
 ####################################################### bloque de estilos ########################################################################################
 ##################################################################################################################################################################
 
+with open('style.css') as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 st.logo("reportes/LOGOS JUNTOS.png")

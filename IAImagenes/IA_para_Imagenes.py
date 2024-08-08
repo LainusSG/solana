@@ -2,10 +2,28 @@ import streamlit as st
 from yolo_prediccion import YOLO_Pred
 from PIL import Image
 import numpy as np
+import datetime
 
 #st.set_page_config(page_title="Detección calificación de soldadura de Imagen",
 #                   layout="wide",
 #                   page_icon="./imagenes/busquedaIA.jpg")
+
+
+fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+
+obra = title = st.text_input("Obra", "")
+
+Pieza = title = st.text_input("Tipo de Pieza", "")
+
+Categoria = title = st.text_input("Categoría", "")
+
+Soldadura = title = st.text_input("Tipo de Soldadura", "")
+
+
+
+
+
+
 st.title('Por favor sube una imagen para hacer detección/calificación')
 
 with st.spinner('Por favor, espera que tu modelo esta cargando'):   
