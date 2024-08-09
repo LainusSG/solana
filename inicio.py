@@ -65,7 +65,7 @@ IAImagenes = st.Page(
     "IAImagenes/IA_para_Imagenes.py", title="IA para Imagenes", icon=":material/image:"
 )
 Dashboard = st.Page(
-    "reportes/dashboard.py", title="Dashboard", icon=":material/dashboard:"
+    "reportes/dashboard2.py", title="Dashboard", icon=":material/dashboard:"
 )
 
 IAVideo = st.Page(
