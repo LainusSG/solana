@@ -70,20 +70,19 @@ col1, col2, col3, col4, col5 = st.columns((5))
 # Create for Obra
 
 with col1:
-    calificacion = st.multiselect("Elige una Obra", df["OBRA"].unique())
-    if not calificacion:
+    Obra = st.multiselect("Elige una Obra", df["OBRA"].unique())
+    if not Obra:
         df2 = df.copy()
     else:
-        df2 = df[df["OBRA"].isin(calificacion)]
-        
-    Obra =calificacion
+        df2 = df[df["OBRA"].isin(Obra)]
+
 # Create for Tipo de Fallas
 with col2:
-    Tipo_de_Fallas = st.multiselect("Elige un Cliente", df2["CLIENTE"].unique())
-    if not Tipo_de_Fallas:
+    Cliente = st.multiselect("Elige un Cliente", df2["CLIENTE"].unique())
+    if not Cliente:
         df3 = df2.copy()
     else:
-        df3 = df2[df2["CLIENTE"].isin(Tipo_de_Fallas)]
+        df3 = df2[df2["CLIENTE"].isin(Cliente)]
 
 # Create for Tipo de Pieza
 with col3:
@@ -108,27 +107,108 @@ with col5:
 
 
 
-if not calificacion and not Tipo_de_Fallas and not Tipo_de_Pieza:
+if not Obra and not Cliente and not Tipo_de_Pieza and not Pieza  and not Falla:
     filtered_df = df
-elif not Tipo_de_Fallas and not Tipo_de_Pieza:
-    filtered_df = df[df["OBRA"].isin(calificacion)]
-elif not calificacion and not Tipo_de_Pieza:
-    filtered_df = df[df["CLIENTE"].isin(Tipo_de_Fallas)]
-elif Tipo_de_Fallas and Tipo_de_Pieza:
-    filtered_df = df3[df["CLIENTE"].isin(Tipo_de_Fallas) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
-elif calificacion and Tipo_de_Pieza:
-    filtered_df = df3[df["OBRA"].isin(calificacion) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
-elif calificacion and Tipo_de_Fallas:
-    filtered_df = df3[df["OBRA"].isin(calificacion) & df3["CLIENTE"].isin(Tipo_de_Fallas)]
-elif Tipo_de_Pieza:
-    filtered_df = df3[df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
-else:
-    filtered_df = df3[df3["OBRA"].isin(calificacion) & df3["CLIENTE"].isin(Tipo_de_Fallas) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    
 
+##################################################################################################################
+elif not Cliente and not Tipo_de_Pieza and not Pieza and not Falla:
+    filtered_df = df[df["OBRA"].isin(Obra)]
+
+elif not Obra and not Tipo_de_Pieza and not Pieza and not Falla:
+    filtered_df = df[df["CLIENTE"].isin(Cliente)]
+
+elif not Falla and not Cliente and not Pieza and not Obra:
+    filtered_df = df3[df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+
+elif not Obra and not Tipo_de_Pieza and not Cliente and not Falla:
+    filtered_df = df[df["PIEZA"].isin(Pieza)]
+
+elif not Obra and not Tipo_de_Pieza and not Cliente and not Pieza:
+    filtered_df = df[df["TIPO DE FALLAS"].isin(Falla)]
+
+##################################################################################################################
+elif Obra and Cliente:
+    filtered_df = df3[df["OBRA"].isin(Obra) & df3["CLIENTE"].isin(Cliente)]
+
+elif Obra and Tipo_de_Pieza:
+    filtered_df = df3[df["OBRA"].isin(Obra) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+
+elif Obra and Pieza:
+    filtered_df = df3[df["OBRA"].isin(Obra) & df3["PIEZA"].isin(Pieza)]
+
+elif Obra and Falla:
+    filtered_df = df3[df["OBRA"].isin(Obra) & df3["TIPO DE FALLAS"].isin(Falla)]
+
+
+##################################################################################################################
+elif Cliente and Tipo_de_Pieza:
+    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+
+elif Cliente and Pieza:
+    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["PIEZA"].isin(Pieza)]
+
+elif Cliente and Falla:
+    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["TIPO DE FALLAS"].isin(Falla)]
+
+elif Cliente and Obra:
+    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["OBRA"].isin(Obra)]
+
+##################################################################################################################
+elif Tipo_de_Pieza and Cliente:
+    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["CLIENTE"].isin(Cliente)]
+
+elif Tipo_de_Pieza and Pieza:
+    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["PIEZA"].isin(Pieza)]
+
+elif Tipo_de_Pieza and Falla:
+    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+
+elif Tipo_de_Pieza and Obra:
+    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["OBRA"].isin(Obra)]
+
+
+##################################################################################################################
+elif Pieza and Cliente:
+    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["CLIENTE"].isin(Cliente)]
+
+elif Pieza and Tipo_de_Pieza:
+    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+
+elif Pieza and Falla:
+    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+
+elif Pieza and Obra:
+    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["OBRA"].isin(Obra)]
+
+
+##################################################################################################################
+elif Falla and Cliente:
+    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["CLIENTE"].isin(Cliente)]
+
+elif Falla and Tipo_de_Pieza:
+    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+
+elif Falla and Pieza:
+    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["PIEZA"].isin(Pieza)]
+
+elif Falla and Obra:
+    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["OBRA"].isin(Obra)]
+
+
+##################################################################################################################
+else:
+    filtered_df = df3[df3["OBRA"].isin(Obra) & df3["CLIENTE"].isin(Cliente) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["PIEZA"].isin(Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+
+
+##################################################################################################################
 category_df = filtered_df.groupby(by = ["TIPO DE PIEZA"], as_index = False)["FALLAS"].sum()
 
 category2_df = filtered_df.groupby(by = ["OBRA"], as_index = False)["FALLAS"].sum()
 
+
+
+##################################################################################################################
 with st.expander("Fallas en Obras"):
     fig12 = px.bar(category2_df, x = "OBRA", y = "FALLAS", text = [x for x in category2_df["FALLAS"]],
                     template ="ggplot2")
@@ -144,7 +224,7 @@ col1, col2= st.columns((2))
 
 with col1:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Pieza</p>', unsafe_allow_html=True)
-    fig1 = px.bar(category_df, x = "TIPO DE PIEZA", y = "FALLAS", text = [x for x in category_df["FALLAS"]])
+    fig1 = px.bar(category_df, x = "TIPO DE PIEZA", y = "FALLAS")
     fig1.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
