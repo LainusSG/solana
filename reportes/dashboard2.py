@@ -206,6 +206,7 @@ category_df = filtered_df.groupby(by = ["TIPO DE PIEZA"], as_index = False)["FAL
 
 category2_df = filtered_df.groupby(by = ["OBRA"], as_index = False)["FALLAS"].sum()
 
+category3_df = filtered_df.groupby(by = ["PIEZA"], as_index = False)["FALLAS"].sum()
 
 
 ##################################################################################################################
@@ -232,6 +233,7 @@ with col1:
     fig1.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig1,use_container_width=True, height = 200)
 
+
 with col2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Fallas por Tipo de Soldadura</p>', unsafe_allow_html=True)
     fig2 = px.pie(filtered_df, values = "FALLAS", names = "TIPO DE SOLDADURA", hole = 0.5, template ="presentation")
@@ -243,8 +245,14 @@ with col2:
     
     st.plotly_chart(fig2,use_container_width=True)
 
-# Create a treem based on Region, category, sub-Category
-
+with st.expander("Por Pieza"):
+    fig11 = px.bar(category3_df, x = "PIEZA", y = "FALLAS")
+    fig11.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig11.update_traces(marker_color='#FF8000')
+    st.plotly_chart(fig11,use_container_width=True, height = 200)
 
 chart1, chart2 = st.columns((2))
 with chart1:
