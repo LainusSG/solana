@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN git clone https://github.com/cashogomez/soldadura.git .
 
-RUN pip3 install -r solana.txt
+#RUN pip3 install -r requirements.txt
 RUN pip install streamlit streamlit-webrtc opencv-python-headless streamlit-authenticator matplotlib
 
 EXPOSE 8501
