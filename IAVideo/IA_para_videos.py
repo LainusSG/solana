@@ -20,6 +20,10 @@ yolo = YOLO_Pred('./models/best.onnx',
                   './models/data.yml')
 
 
+conn = st.connection("postgresql", type="sql")
+df= conn.query('select * from soldadura;', ttl="1s")
+st.dataframe(df)
+
 fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
 
 obra = title = st.text_input("Obra", "")

@@ -3,7 +3,7 @@ from yolo_prediccion import YOLO_Pred
 from PIL import Image
 import numpy as np
 import datetime
-
+from sqlalchemy import text
 #st.set_page_config(page_title="Detección calificación de soldadura de Imagen",
 #                   layout="wide",
 #                   page_icon="./imagenes/busquedaIA.jpg")
@@ -18,15 +18,48 @@ with col3:
     st.write("")
 
 
-fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
 
-obra = title = st.text_input("Obra", "")
+################################################## Conexion a la base de dato ################################################################################
 
-Pieza = title = st.text_input("Tipo de Pieza", "")
 
-Categoria = title = st.text_input("Categoría", "")
 
-Soldadura = title = st.text_input("Tipo de Soldadura", "")
+
+
+
+
+Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+
+Obra = st.text_input("Obra", "")
+
+Cliente = st.text_input("Cliente", "")
+
+Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+
+Pieza = st.text_input("Pieza", "")
+
+Categoria = st.text_input("Categoría", "")
+
+Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+conn = st.connection("postgresql", type="sql")
+
+if st.button("summit"):
+    with conn.session as s:
+    # soldadura = {Fecha, Obra, Cliente, Tipo_Pieza, Pieza, Categoria, Tipo_soldadura}
+
+
+        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
+            params=dict(fecha=Fecha, calificacion ='10', obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas='tope', fallas= 1 )
+            )
+        s.commit()
+
+
+
+
+
+
+################################################## Conexion a la base de dato ################################################################################
+
 
 
 
@@ -61,7 +94,7 @@ def subir_imagen():
             st.error('Tipo de archivo de imagen inválido')
             st.error('Subir solamente png, jpg, jpeg')
             return None
-
+valorfalla=[]
 object = subir_imagen()
 if object:
     prediccion = False
@@ -82,7 +115,7 @@ if object:
                             """):
                 st.write('Pushaste el botón')
                 arreglo_imagen = np.array(imagen_obj)
-                pred_img = yolo.predicciones(arreglo_imagen)
+                [pred_img, valorfalla] = yolo.predicciones(arreglo_imagen)
                 pred_img_obj = Image.fromarray(pred_img)
                 prediccion = True
 
@@ -91,3 +124,6 @@ if object:
         st.caption("Detección de objetos con la IA")
         st.image(pred_img_obj)
 
+
+
+st.write(valorfalla)

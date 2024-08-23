@@ -24,6 +24,10 @@ class YOLO_Pred():
 
         row, col, d = image.shape
 
+        valorfalla=[
+
+        ]
+
         #Paso 1: Convertir imagen en una imagen cuadrada
         max_rc = max(row, col)
         input_image = np.zeros((max_rc, max_rc, 3), dtype=np.uint8)
@@ -83,11 +87,11 @@ class YOLO_Pred():
             colors = self.generar_color(class_id)
 
             text = f'{class_name}: {bb_conf}%'
-            
+            valorfalla.append(text)
             cv2.rectangle(image, (x,y),(x+w,y+h), colors,2)
             cv2.rectangle(image,(x,y-30),(x+w,y),colors,-1)
             cv2.putText(image, text,(x,y-10), cv2.FONT_HERSHEY_PLAIN,5,(0,255,0),8)
-        return image
+        return [image, valorfalla] 
     def generar_color(self, ID):
         np.random.seed(10)
         colors = np.random.randint(100, 255, size=(self.nc, 3)).tolist()
