@@ -124,6 +124,25 @@ if object:
         st.caption("Detección de objetos con la IA")
         st.image(pred_img_obj)
 
+for k in valorfalla:
+    valor1 = k.split(':')
+    try:
+        valor2 = int(valor1[0])
+        st.write(valor2)
+ 
+    except:
+        valor2 =valor1[0]
+        st.write(valor2)
+    
+   
+    if type(valor2) is str:
+        calificacion = 'sin calificacion'
+        tipo_fallas = valor2
+        fallas = 1
+    else:
+        calificacion = str(valor2)
+        tipo_fallas = 'sin falla'
+        fallas = 0
 
-
-st.write(valorfalla)
+st.write ('es la calificacion:      ' + calificacion)
+st.write ('es la falla:      ' + tipo_fallas)
