@@ -17,53 +17,7 @@ with col2:
 with col3:
     st.write("")
 
-
-
-################################################## Conexion a la base de dato ################################################################################
-
-
-
-
-
-
-
-Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
-
-Obra = st.text_input("Obra", "")
-
-Cliente = st.text_input("Cliente", "")
-
-Tipo_Pieza = st.text_input("Tipo de Pieza", "")
-
-Pieza = st.text_input("Pieza", "")
-
-Categoria = st.text_input("Categoría", "")
-
-Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
-
-conn = st.connection("postgresql", type="sql")
-
-if st.button("summit"):
-    with conn.session as s:
-    # soldadura = {Fecha, Obra, Cliente, Tipo_Pieza, Pieza, Categoria, Tipo_soldadura}
-
-
-        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
-            params=dict(fecha=Fecha, calificacion ='10', obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas='tope', fallas= 1 )
-            )
-        s.commit()
-
-
-
-
-
-
-################################################## Conexion a la base de dato ################################################################################
-
-
-
-
-
+# ##################################  OBTENER VALORES DE LA IA #######################################
 
 
 st.title('Por favor sube una imagen para hacer detección/calificación')
@@ -124,25 +78,78 @@ if object:
         st.caption("Detección de objetos con la IA")
         st.image(pred_img_obj)
 
-for k in valorfalla:
-    valor1 = k.split(':')
-    try:
-        valor2 = int(valor1[0])
-        st.write(valor2)
- 
-    except:
-        valor2 =valor1[0]
-        st.write(valor2)
-    
-   
-    if type(valor2) is str:
-        calificacion = 'sin calificacion'
-        tipo_fallas = valor2
-        fallas = 1
-    else:
-        calificacion = str(valor2)
-        tipo_fallas = 'sin falla'
-        fallas = 0
+valor2 =[]
+valor2_f=[]     
+total_fallas = []
+if len(valorfalla) > 0:
+    for k in valorfalla:
 
-st.write ('es la calificacion:      ' + calificacion)
-st.write ('es la falla:      ' + tipo_fallas)
+        valor1 = k.split(':')
+        try:
+            valor3 = int(valor1[0])
+            valor2.append(valor3)
+            st.write(valor2)
+    
+        except:
+            igual=False
+            for kk in valor2_f:
+                if kk == valor1[0]:
+                    igual=True
+            if not igual:
+                valor2_f.append(valor1[0])
+            st.write(valor2_f)
+    nnn=0
+    x=0
+    for nn in valor2:
+        nnn+=nn
+        x+=1
+    if x > 0:    
+        calificacion = nnn/x
+    else:
+        calificacion = 0
+    if len(valor2_f) > 0:
+        for kkk in valor2_f:
+            total_fallas.append([calificacion, kkk, 1])
+    else:
+        total_fallas.append([calificacion, 'No hay fallas', 0])
+else:
+    total_fallas.append([0, 'No hay fallas', 0])
+        
+st.write (total_fallas) 
+
+
+################################################## Conexion a la base de dato ################################################################################
+
+
+Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+
+Obra = st.text_input("Obra", "")
+
+Cliente = st.text_input("Cliente", "")
+
+Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+
+Pieza = st.text_input("Pieza", "")
+
+Categoria = st.text_input("Categoría", "")
+
+Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+conn = st.connection("postgresql", type="sql")
+for [calificacion1, tipo_fallas1, fallas1] in total_fallas:
+    if st.button("summit"):
+        with conn.session as s:
+        # soldadura = {Fecha, Obra, Cliente, Tipo_Pieza, Pieza, Categoria, Tipo_soldadura}
+
+
+            s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
+                params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1 )
+                )
+            s.commit()
+
+
+
+
+
+
+################################################## Conexion a la base de dato ################################################################################
