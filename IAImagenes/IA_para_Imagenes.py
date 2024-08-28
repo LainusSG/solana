@@ -38,7 +38,7 @@ with st.spinner('Por favor, espera que tu modelo esta cargando'):
 
 #Subir imagen
 def subir_imagen():
-    archivo_imagen = st.file_uploader(label=":orange[Subir Imagen]")
+    archivo_imagen = st.file_uploader(label=":orange[Cargue la soldadura a analizar]")
     if archivo_imagen is not None:
         size_mb = archivo_imagen.size/(1024**2)
         detalles_archivo = {
