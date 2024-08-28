@@ -108,7 +108,7 @@ def realizar_limpieza(valorfalla):
             try:
                 valor3 = float(valor1[0])
                 valor2.append(valor3)
-                st.write(valor2)
+                
         
             except:
                 igual=False
@@ -117,7 +117,7 @@ def realizar_limpieza(valorfalla):
                         igual=True
                 if not igual:
                     valor2_f.append(valor1[0])
-                st.write(valor2_f)
+                
         nnn=0
         x=0
         for nn in valor2:
@@ -134,8 +134,7 @@ def realizar_limpieza(valorfalla):
             total_fallas.append([calificacion, 'No hay fallas', 0])
     else:
         total_fallas.append([0, 'No hay fallas', 0])
-            
-    st.write (total_fallas) 
+ 
     return(total_fallas)
 
 

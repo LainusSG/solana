@@ -12,6 +12,12 @@ credentials:
       logged_in: False # Will be managed automatically
       name: Estructuras Solana
       password: def # Will be hashed automatically
+    user:
+      email: usuarios@test.com
+      failed_login_attempts: 0 # Will be managed automatically
+      logged_in: False # Will be managed automatically
+      name: Usuario
+      password: $2b$12$JnSfv.6oxL04XgFMv0CmLOXJaNOUQkcjszRXIA57XJ//yD2crNvaS # Will be hashed automatically
 cookie:
   expiry_days: 30
   key: some_signature_key # Must be string

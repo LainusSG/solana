@@ -76,6 +76,19 @@ About = st.Page(
 )
 
 
+
+bienvenida2 = st.Page(
+    "Usuarios/bienvenida2.py", title="BIenvenida", icon=":material/home:"
+)
+
+Pruebas = st.Page(
+    "Usuarios/Usuarios.py", title="Pruebas de Imagen", icon=":material/image:"
+)
+Pruebas2 = st.Page(
+    "Usuarios/videos.py", title="Pruebas de Video", icon=":material/camera:"
+)
+
+
 custom_css = """
 <style>
 div.stButton button {
@@ -121,6 +134,18 @@ if st.session_state["authentication_status"]:
             "IAVideo": [IAVideo],
             "Reportes": [Dashboard],
             "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'user':
+        #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
+        
+        #st.title('Usuario')
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida2],
+            "Pruebas de Imagen":[Pruebas],
+            "Pruebas de Video":[Pruebas2],
         }
         )
         pg.run()
