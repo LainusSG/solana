@@ -27,8 +27,7 @@ yolo = YOLO_Pred('./models/best.onnx',
 
 
 lock = threading.Lock()
-img_container = {"img": None}
-total_fallas=[]
+img_container = {"img": None, "data": ""}
 
 
 
@@ -38,34 +37,68 @@ def video_frame_callback(frame):
     with lock:
         #flipped = img[::-1,:,:]
         [pred_img, falla_detectada] = yolo.predicciones(img)
-
-        total_fallas.append(falla_detectada)
+        img_container["img"] = pred_img
+        img_container["data"] = falla_detectada
     return av.VideoFrame.from_ndarray(pred_img, format="bgr24")
 
-st.write(total_fallas)
 
 ctx = webrtc_streamer(key="example", video_frame_callback=video_frame_callback, rtc_configuration= {"iceServers": [{"urls":["stun:stun1.l.google.com:19302"]}]}, media_stream_constraints={"video":True, "audio": False})
 
 fig_place = st.empty()
 fig, ax = plt.subplots(1, 1)
 
-while ctx.state.playing:
-    with lock:
-        img = img_container["img"]
-    if img is None:
-        continue
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ax.cla()
-    ax.hist(gray.ravel(), 256, [0, 256])
-    fig_place.pyplot(fig)
 
-if len(total_fallas) > 0:
-    st.write(total_fallas)
-else:
-    st.write('No se ha detectado falla')
+
+
+def realizar_limpieza(valorfalla):
+    valor2 =[]
+    valor2_f=[]     
+    total_fallas = []
+    if len(valorfalla) > 0:
+        for k in valorfalla:
+
+            valor1 = k.split(':')
+            try:
+                valor3 = float(valor1[0])
+                valor2.append(valor3)
+                
+        
+            except:
+                igual=False
+                for kk in valor2_f:
+                    if kk == valor1[0]:
+                        igual=True
+                if not igual:
+                    valor2_f.append(valor1[0])
+                
+        nnn=0
+        x=0
+        for nn in valor2:
+            nnn+=nn
+            x+=1
+        if x > 0:    
+            calificacion = nnn/x
+        else:
+            calificacion = 0
+        if len(valor2_f) > 0:
+            for kkk in valor2_f:
+                total_fallas.append([calificacion, kkk, 1])
+        else:
+            total_fallas.append([calificacion, 'No hay fallas', 0])
+    else:
+        total_fallas.append([0, 'No hay fallas', 0])
+ 
+    return(total_fallas)
+
+
+
+
+
 
 
 conn = st.connection("postgresql", type="sql")
+
+
 
 def create_new_form():
     with st.form("myform", clear_on_submit=True):
@@ -84,17 +117,41 @@ def create_new_form():
         Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
         submit = st.form_submit_button(label="Submit")
         if submit:
-            with conn.session as s:
-                if len(total_fallas)<= 0:
-                    total_fallas. append([0,'No hay fallas',0])
-                for [calificacion1, tipo_fallas1, fallas1] in total_fallas:
-                    s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
-                           params=dict(fecha=Fecha, calificacion=calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza=Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas=fallas1 )
-                                                )
-                    s.commit()
-                    
+            total_fallas=[]
+            valorfalla = []
+            tamano = 0
+            while ctx.state.playing:
+                with lock:
+                    img = img_container["img"]
+                    for kk in img_container["data"]:
+                        valor = kk.split(":")
+                        if not valor[0] in total_fallas:
+                            valorfalla.append(valor[0])
+                            total_fallas= realizar_limpieza(valorfalla)
+                            if len(total_fallas)>tamano:
+                                tamano = len(total_fallas)
+                                with conn.session as s:
+                                    if len(total_fallas)<= 0:
+                                        total_fallas. append([0,'No hay fallas',0])
+                                    for [calificacion1, tipo_fallas1, fallas1] in total_fallas:
+                                        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
+                                            params=dict(fecha=Fecha, calificacion=calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza=Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas=fallas1 )
+                                                                    )
+                                        s.commit()
+                            
 
-        st.write(total_fallas)
+
+                if img is None:
+                    continue
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                ax.cla()
+                ax.hist(gray.ravel(), 256, [0, 256])
+                fig_place.pyplot(fig)
+    
+
+
+                   
+
     
 
 
