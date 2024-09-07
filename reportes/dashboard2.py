@@ -416,7 +416,7 @@ with st.expander("Organización de Fallas"):
 
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Tabla de Datos</p>', unsafe_allow_html=True)
 with st.expander("Reporte de Obra"):
-    df_sample = filtered_df[["fecha", "calificacion", "obra", "cliente", "tipo_pieza", "pieza", "categoria", "tipo_soldadura", "tipo_fallas", "fallas"]]
+    df_sample = filtered_df[["fecha", "obra", "cliente", "tipo_pieza", "pieza", "tipo_soldadura", "tipo_fallas", "categoria", "calificacion","fallas"]]
     df_sample["fecha"] = [
         datetime.datetime.strptime(
             str(target_date).split(" ")[0], '%Y-%m-%d').date()
@@ -548,7 +548,7 @@ if export_as_pdf:
     pdf.cell(19.6,10, 'Obra', 1,0,'C', True)
     pdf.cell(19.6,10, 'Cliente', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Pieza', 1,0,'C', True)
-    pdf.cell(19.6,10, 'pieza', 1,0,'C', True)
+    pdf.cell(19.6,10, 'Pieza', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Soldadura', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Falla', 1,0,'C', True)
     pdf.cell(19.6,10, 'Categoría', 1,0,'C', True)
