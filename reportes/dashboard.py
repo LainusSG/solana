@@ -34,8 +34,15 @@ with col3:
 #     df = pd.read_csv(filename, encoding = "ISO-8859-1")
 # else:
     #os.chdir(r"reportes")
-df = pd.read_csv("reportes/Graficas3.csv", encoding = "ISO-8859-1")
 
+
+
+########################################################################################   
+########################################################################################   
+########################################################################################   
+conn = st.connection("postgresql", type="sql")
+#df = pd.read_csv("reportes/Graficas3.csv", encoding = "ISO-8859-1")
+df= conn.query('select * from soldadura;', ttl="1s")
 
 
 ########################################################################################   
@@ -46,11 +53,11 @@ def convert(dt):
         return datetime.strptime(dt, '%m/%d/%Y').strftime('%d/%m/%Y')
     except ValueError:
         return dt
-df["FECHA"] = pd.to_datetime(df["FECHA"])
+df["fecha"] = pd.to_datetime(df["fecha"])
 
 # Getting the min and max date 
-startDate = pd.to_datetime(df["FECHA"]).min()
-endDate = pd.to_datetime(df["FECHA"]).max()
+startDate = pd.to_datetime(df["fecha"]).min()
+endDate = pd.to_datetime(df["fecha"]).max()
 
 with col1:
     date1 = pd.to_datetime(st.date_input("Fecha de Inicio", startDate))
@@ -60,7 +67,7 @@ with col2:
     date2 = pd.to_datetime(st.date_input("Fecha Final", endDate))
     today4 = date2.strftime("%d/%m/%Y")
 
-df = df[(df["FECHA"] >= date1) & (df["FECHA"] <= date2)].copy()
+df = df[(df["fecha"] >= date1) & (df["fecha"] <= date2)].copy()
 
 ########################################################################################   
 
@@ -70,37 +77,37 @@ col1, col2, col3, col4, col5 = st.columns((5))
 # Create for Obra
 
 with col1:
-    Obra = st.multiselect("Elige una Obra", df["OBRA"].unique())
+    Obra = st.multiselect("Elige una Obra", df["obra"].unique())
     if not Obra:
         df2 = df.copy()
     else:
-        df2 = df[df["OBRA"].isin(Obra)]
+        df2 = df[df["obra"].isin(Obra)]
 
 # Create for Tipo de Fallas
 with col2:
-    Cliente = st.multiselect("Elige un Cliente", df2["CLIENTE"].unique())
+    Cliente = st.multiselect("Elige un Cliente", df2["cliente"].unique())
     if not Cliente:
         df3 = df2.copy()
     else:
-        df3 = df2[df2["CLIENTE"].isin(Cliente)]
+        df3 = df2[df2["cliente"].isin(Cliente)]
 
 # Create for Tipo de Pieza
 with col3:
-    Tipo_de_Pieza = st.multiselect("Elige un Material",df3["TIPO DE PIEZA"].unique())
+    Tipo_de_Pieza = st.multiselect("Elige un Material",df3["tipo_pieza"].unique())
     if not Tipo_de_Pieza:
         df4 = df3.copy()
     else:
-        df4 = df3[df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+        df4 = df3[df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 with col4:
-    Pieza = st.multiselect("Elige una Pieza",df4["PIEZA"].unique())
+    Pieza = st.multiselect("Elige una Pieza",df4["pieza"].unique())
     if not Pieza:
         df5 = df4.copy()
     else:
-        df5 = df4[df4["PIEZA"].isin(Pieza)]
+        df5 = df4[df4["pieza"].isin(Pieza)]
 
 with col5:
-    Falla = st.multiselect("Elige una Falla",df5["TIPO DE FALLAS"].unique())
+    Falla = st.multiselect("Elige una Falla",df5["tipo_fallas"].unique())
    
 
 
@@ -113,105 +120,105 @@ if not Obra and not Cliente and not Tipo_de_Pieza and not Pieza  and not Falla:
 
 ##################################################################################################################
 elif not Cliente and not Tipo_de_Pieza and not Pieza and not Falla:
-    filtered_df = df[df["OBRA"].isin(Obra)]
+    filtered_df = df[df["obra"].isin(Obra)]
 
 elif not Obra and not Tipo_de_Pieza and not Pieza and not Falla:
     filtered_df = df[df["CLIENTE"].isin(Cliente)]
 
 elif not Falla and not Cliente and not Pieza and not Obra:
-    filtered_df = df3[df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    filtered_df = df3[df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 elif not Obra and not Tipo_de_Pieza and not Cliente and not Falla:
-    filtered_df = df[df["PIEZA"].isin(Pieza)]
+    filtered_df = df[df["pieza"].isin(Pieza)]
 
 elif not Obra and not Tipo_de_Pieza and not Cliente and not Pieza:
-    filtered_df = df[df["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df[df["tipo_fallas"].isin(Falla)]
 
 ##################################################################################################################
 elif Obra and Cliente:
-    filtered_df = df3[df["OBRA"].isin(Obra) & df3["CLIENTE"].isin(Cliente)]
+    filtered_df = df3[df["obra"].isin(Obra) & df3["cliente"].isin(Cliente)]
 
 elif Obra and Tipo_de_Pieza:
-    filtered_df = df3[df["OBRA"].isin(Obra) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    filtered_df = df3[df["obra"].isin(Obra) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 elif Obra and Pieza:
-    filtered_df = df3[df["OBRA"].isin(Obra) & df3["PIEZA"].isin(Pieza)]
+    filtered_df = df3[df["obra"].isin(Obra) & df3["pieza"].isin(Pieza)]
 
 elif Obra and Falla:
-    filtered_df = df3[df["OBRA"].isin(Obra) & df3["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df3[df["obra"].isin(Obra) & df3["tipo_fallas"].isin(Falla)]
 
 
 ##################################################################################################################
 elif Cliente and Tipo_de_Pieza:
-    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    filtered_df = df3[df["cliente"].isin(Cliente) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 elif Cliente and Pieza:
-    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["PIEZA"].isin(Pieza)]
+    filtered_df = df3[df["cliente"].isin(Cliente) & df3["pieza"].isin(Pieza)]
 
 elif Cliente and Falla:
-    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df3[df["cliente"].isin(Cliente) & df3["tipo_fallas"].isin(Falla)]
 
 elif Cliente and Obra:
-    filtered_df = df3[df["CLIENTE"].isin(Cliente) & df3["OBRA"].isin(Obra)]
+    filtered_df = df3[df["cliente"].isin(Cliente) & df3["obra"].isin(Obra)]
 
 ##################################################################################################################
 elif Tipo_de_Pieza and Cliente:
-    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["CLIENTE"].isin(Cliente)]
+    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["cliente"].isin(Cliente)]
 
 elif Tipo_de_Pieza and Pieza:
-    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["PIEZA"].isin(Pieza)]
+    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["pieza"].isin(Pieza)]
 
 elif Tipo_de_Pieza and Falla:
-    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["tipo_fallas"].isin(Falla)]
 
 elif Tipo_de_Pieza and Obra:
-    filtered_df = df3[df["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["OBRA"].isin(Obra)]
+    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["obra"].isin(Obra)]
 
 
 ##################################################################################################################
 elif Pieza and Cliente:
-    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["CLIENTE"].isin(Cliente)]
+    filtered_df = df3[df["pieza"].isin(Pieza) & df3["cliente"].isin(Cliente)]
 
 elif Pieza and Tipo_de_Pieza:
-    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    filtered_df = df3[df["pieza"].isin(Pieza) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 elif Pieza and Falla:
-    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df3[df["pieza"].isin(Pieza) & df3["tipo_fallas"].isin(Falla)]
 
 elif Pieza and Obra:
-    filtered_df = df3[df["PIEZA"].isin(Pieza) & df3["OBRA"].isin(Obra)]
+    filtered_df = df3[df["pieza"].isin(Pieza) & df3["obra"].isin(Obra)]
 
 
 ##################################################################################################################
 elif Falla and Cliente:
-    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["CLIENTE"].isin(Cliente)]
+    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["cliente"].isin(Cliente)]
 
 elif Falla and Tipo_de_Pieza:
-    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza)]
+    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
 
 elif Falla and Pieza:
-    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["PIEZA"].isin(Pieza)]
+    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["pieza"].isin(Pieza)]
 
 elif Falla and Obra:
-    filtered_df = df3[df["TIPO DE FALLAS"].isin(Falla) & df3["OBRA"].isin(Obra)]
+    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["obra"].isin(Obra)]
 
 
 ##################################################################################################################
 else:
-    filtered_df = df3[df3["OBRA"].isin(Obra) & df3["CLIENTE"].isin(Cliente) & df3["TIPO DE PIEZA"].isin(Tipo_de_Pieza) & df3["PIEZA"].isin(Pieza) & df3["TIPO DE FALLAS"].isin(Falla)]
+    filtered_df = df3[df3["obra"].isin(Obra) & df3["cliente"].isin(Cliente) & df3["tipo_pieza"].isin(Tipo_de_Pieza) & df3["pieza"].isin(Pieza) & df3["tipo_fallas"].isin(Falla)]
 
 
 ##################################################################################################################
-category_df = filtered_df.groupby(by = ["TIPO DE PIEZA"], as_index = False)["FALLAS"].sum()
+category_df = filtered_df.groupby(by = ["tipo_pieza"], as_index = False)["fallas"].sum()
 
-category2_df = filtered_df.groupby(by = ["OBRA"], as_index = False)["FALLAS"].sum()
+category2_df = filtered_df.groupby(by = ["obra"], as_index = False)["fallas"].sum()
 
-category3_df = filtered_df.groupby(by = ["PIEZA"], as_index = False)["FALLAS"].sum()
+category3_df = filtered_df.groupby(by = ["pieza"], as_index = False)["fallas"].sum()
 
 
 ##################################################################################################################
 with st.expander("Fallas en Obras"):
-    fig12 = px.bar(category2_df, x = "OBRA", y = "FALLAS", text = [x for x in category2_df["FALLAS"]],
+    fig12 = px.bar(category2_df, x = "obra", y = "fallas",
                     template ="ggplot2")
     fig12.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -225,7 +232,7 @@ col1, col2= st.columns((2))
 
 with col1:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Pieza</p>', unsafe_allow_html=True)
-    fig1 = px.bar(category_df, x = "TIPO DE PIEZA", y = "FALLAS")
+    fig1 = px.bar(category_df, x = "tipo_pieza", y = "fallas")
     fig1.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -236,8 +243,8 @@ with col1:
 
 with col2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Fallas por Tipo de Soldadura</p>', unsafe_allow_html=True)
-    fig2 = px.pie(filtered_df, values = "FALLAS", names = "TIPO DE SOLDADURA", hole = 0.5, template ="presentation")
-    fig2.update_traces(text = filtered_df["CATEGORIA"], textposition = "outside")
+    fig2 = px.pie(filtered_df, values = "fallas", names = "tipo_soldadura", hole = 0.5, template ="presentation")
+    fig2.update_traces(text = filtered_df["categoria"], textposition = "outside")
     fig2.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -246,7 +253,7 @@ with col2:
     st.plotly_chart(fig2,use_container_width=True)
 
 with st.expander("Por Pieza"):
-    fig11 = px.bar(category3_df, x = "PIEZA", y = "FALLAS")
+    fig11 = px.bar(category3_df, x = "pieza", y = "fallas")
     fig11.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -257,8 +264,8 @@ with st.expander("Por Pieza"):
 chart1, chart2 = st.columns((2))
 with chart1:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Pieza</p>', unsafe_allow_html=True)
-    fig3 = px.pie(filtered_df, values = "FALLAS", names = "TIPO DE PIEZA", template ="presentation")
-    fig3.update_traces(text = filtered_df["TIPO DE PIEZA"], textposition = "inside")
+    fig3 = px.pie(filtered_df, values = "fallas", names = "tipo_pieza", template ="presentation")
+    fig3.update_traces(text = filtered_df["tipo_pieza"], textposition = "inside")
     fig3.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -267,8 +274,8 @@ with chart1:
 
 with chart2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Tipo de Soldadura</p>', unsafe_allow_html=True)
-    fig4 = px.pie(filtered_df, values = "FALLAS", names = "TIPO DE SOLDADURA", template ="presentation")
-    fig4.update_traces(text = filtered_df["TIPO DE FALLAS"], textposition = "inside")
+    fig4 = px.pie(filtered_df, values = "fallas", names = "tipo_soldadura", template ="presentation")
+    fig4.update_traces(text = filtered_df["tipo_fallas"], textposition = "inside")
     fig4.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -289,7 +296,7 @@ with cl1:
     
 with cl2:
     with st.expander("Fallas por Tipo de Soldadura"):
-        calificacion = filtered_df.groupby(by = "CATEGORIA", as_index = False)["FALLAS"].sum()
+        calificacion = filtered_df.groupby(by = "categoria", as_index = False)["fallas"].sum()
         st.write(calificacion.style.background_gradient(cmap="Oranges"))
         csv = calificacion.to_csv(index = False).encode('utf-8')
         st.download_button("Descargar", data = csv, file_name = "Categoria.csv", mime = "text/csv",
@@ -305,11 +312,11 @@ col1, col2 = st.columns((2))
 
 ########################################################################################           
 with col1:
-    filtered_df["Año"] = filtered_df["FECHA"].dt.to_period("Y")
+    filtered_df["Año"] = filtered_df["fecha"].dt.to_period("Y")
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Año</p>', unsafe_allow_html=True)
 
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Año"].dt.strftime("%Y"))["FALLAS"].sum()).reset_index()
-    fig5 = px.line(linechart, x = "Año", y="FALLAS", labels = {"FALLAS": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Año"].dt.strftime("%Y"))["fallas"].sum()).reset_index()
+    fig5 = px.line(linechart, x = "Año", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
     fig5.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -327,11 +334,11 @@ with col1:
 
 ########################################################################################           
 with col2:
-    filtered_df["Mes"] = filtered_df["FECHA"].dt.to_period("M")
+    filtered_df["Mes"] = filtered_df["fecha"].dt.to_period("M")
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Mes</p>', unsafe_allow_html=True)
 
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Mes"].dt.strftime("%B"))["FALLAS"].sum()).reset_index()
-    fig6 = px.line(linechart, x = "Mes", y="FALLAS", labels = {"FALLAS": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Mes"].dt.strftime("%B"))["fallas"].sum()).reset_index()
+    fig6 = px.line(linechart, x = "Mes", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
     fig6.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -353,11 +360,11 @@ col1, col2 = st.columns((2))
 
 ########################################################################################           
 with col1:
-    filtered_df["Semana"] = filtered_df["FECHA"].dt.to_period("W")
+    filtered_df["Semana"] = filtered_df["fecha"].dt.to_period("W")
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Semana</p>', unsafe_allow_html=True)
 
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Semana"].dt.strftime("%W"))["FALLAS"].sum()).reset_index()
-    fig9 = px.line(linechart, x = "Semana", y="FALLAS", labels = {"FALLAS": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Semana"].dt.strftime("%W"))["fallas"].sum()).reset_index()
+    fig9 = px.line(linechart, x = "Semana", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
     fig9.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -373,11 +380,11 @@ with col1:
 
 
 with col2:
-    filtered_df["Dia"] = filtered_df["FECHA"].dt.to_period("D")
+    filtered_df["Dia"] = filtered_df["fecha"].dt.to_period("D")
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Dia</p>', unsafe_allow_html=True)
 
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Dia"].dt.strftime("%D"))["FALLAS"].sum()).reset_index()
-    fig10 = px.line(linechart, x = "Dia", y="FALLAS", labels = {"FALLAS": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Dia"].dt.strftime("%D"))["fallas"].sum()).reset_index()
+    fig10 = px.line(linechart, x = "Dia", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
     fig10.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -396,7 +403,7 @@ with col2:
 
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas</p>', unsafe_allow_html=True)
 with st.expander("Organización de Fallas"):
-    fig7 = px.treemap(filtered_df, path = ["CATEGORIA","TIPO DE FALLAS","TIPO DE PIEZA", "CALIFICACION"], values = "FALLAS",hover_data = ["FALLAS"],template="presentation")
+    fig7 = px.treemap(filtered_df, path = ["categoria","tipo_fallas","tipo_pieza", "calificacion"], values = "fallas",hover_data = ["fallas"],template="presentation")
     fig7.update_layout(width = 800, height = 800)
     fig7.update_layout({
         'plot_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -409,11 +416,11 @@ with st.expander("Organización de Fallas"):
 
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Tabla de Datos</p>', unsafe_allow_html=True)
 with st.expander("Reporte de Obra"):
-    df_sample = filtered_df[["FECHA","OBRA","CLIENTE","TIPO DE PIEZA","PIEZA","TIPO DE SOLDADURA","TIPO DE FALLAS","CATEGORIA","CALIFICACION","FALLAS"]]
-    df_sample["FECHA"] = [
+    df_sample = filtered_df[["fecha", "obra", "cliente", "tipo_pieza", "pieza", "tipo_soldadura", "tipo_fallas", "categoria", "calificacion","fallas"]]
+    df_sample["fecha"] = [
         datetime.datetime.strptime(
             str(target_date).split(" ")[0], '%Y-%m-%d').date()
-        for target_date in df_sample["FECHA"]
+        for target_date in df_sample["fecha"]
     ]
     fig8 = ff.create_table(df_sample, colorscale = "hot")
     fig8.update_layout({
@@ -541,7 +548,7 @@ if export_as_pdf:
     pdf.cell(19.6,10, 'Obra', 1,0,'C', True)
     pdf.cell(19.6,10, 'Cliente', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Pieza', 1,0,'C', True)
-    pdf.cell(19.6,10, 'pieza', 1,0,'C', True)
+    pdf.cell(19.6,10, 'Pieza', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Soldadura', 1,0,'C', True)
     pdf.cell(19.6,10, 'Tipo de Falla', 1,0,'C', True)
     pdf.cell(19.6,10, 'Categoría', 1,0,'C', True)

@@ -138,7 +138,7 @@ if object:
 
         ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
         ## que siempre cambiara en cada analisís
-        storage.child(str(today2)+' - '+str(today3)).put(imgw)
+        storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
 
 
 

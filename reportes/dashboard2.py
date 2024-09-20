@@ -573,9 +573,38 @@ if export_as_pdf:
     
     
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), 'Obra '+str(Obra[0])+ '_'+str(today2) )
+    
 
+    import pyrebase
+
+    ## configuraciones de la base de datos
+    firebaseConfig = {
+        "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
+            "authDomain": "soldaduraia.firebaseapp.com",
+        "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
+        "projectId": "soldaduraia",
+        "storageBucket": "soldaduraia.appspot.com",
+        "messagingSenderId": "555516242506",
+        "appId": "1:555516242506:web:83e25c3add2f37773914b3",
+        "measurementId": "G-MVY7HV0Y5Y"
+        }
+
+    firebase = pyrebase.initialize_app(firebaseConfig )
+    storage = firebase.storage()
+
+
+
+    #pred_img_obj.save("imagenes/pred_img_obj.png")
+    #imgw= "imagenes/pred_img_obj.png"
+
+    today = datetime.datetime.now()
+    today3 = today.strftime("%H:%M:%S")
+    today2 = today.strftime("%d-%m-%Y")
+
+    
 
     st.markdown(html, unsafe_allow_html=True)
+    storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
 
 
 
