@@ -4,6 +4,25 @@ from PIL import Image
 import numpy as np
 import datetime
 from sqlalchemy import text
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #st.set_page_config(page_title="Detección calificación de soldadura de Imagen",
 #                   layout="wide",
 #                   page_icon="./imagenes/busquedaIA.jpg")
@@ -26,7 +45,7 @@ with st.spinner('Por favor, espera que tu modelo esta cargando'):
     yolo = YOLO_Pred(onnx_model='./models/best.onnx',
                     data_yaml='./models/data.yml')
     
-
+num = 0
 #Subir imagen
 def subir_imagen():
     archivo_imagen = st.file_uploader(label=":orange[Subir Imagen]")
@@ -49,6 +68,7 @@ def subir_imagen():
             st.error('Subir solamente png, jpg, jpeg')
             return None
 valorfalla=[]
+
 object = subir_imagen()
 if object:
     prediccion = False
@@ -67,7 +87,7 @@ if object:
             with st.spinner("""
                     Detectando fallas de soldadura en la imagen. Por favor, paciencia
                             """):
-                st.write('Pushaste el botón')
+                st.write('Presionaste el botón')
                 arreglo_imagen = np.array(imagen_obj)
                 [pred_img, valorfalla] = yolo.predicciones(arreglo_imagen)
                 pred_img_obj = Image.fromarray(pred_img)
@@ -77,3 +97,49 @@ if object:
         st.subheader(" Imagen analizada")
         st.caption("Detección de objetos con la IA")
         st.image(pred_img_obj)
+        
+
+        ### comienzo del archivo de subida 
+        import pyrebase
+
+        ## configuraciones de la base de datos
+        firebaseConfig = {
+            "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
+            "authDomain": "soldaduraia.firebaseapp.com",
+            "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
+            "projectId": "soldaduraia",
+            "storageBucket": "soldaduraia.appspot.com",
+            "messagingSenderId": "555516242506",
+            "appId": "1:555516242506:web:83e25c3add2f37773914b3",
+            "measurementId": "G-MVY7HV0Y5Y"
+            }
+
+        firebase = pyrebase.initialize_app(firebaseConfig )
+        ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+        storage = firebase.storage()
+
+
+        ## aquí declare la imagen con un nombre arbitrario, lo remplazare con los datos del reporte
+        ## esá imagen siempre se guardará con el mismo nombre del archivo para remplazar el archivo existente
+        ## pero en la base de datos tomara el nombre que le asigne, en este caso el de la fecha
+        pred_img_obj.save("imagenes/pred_img_obj.png")
+        imgw= "imagenes/pred_img_obj.png"
+
+        
+        
+
+        today = datetime.datetime.now()
+        today3 = today.strftime("%H:%M:%S")
+        today2 = today.strftime("%d-%m-%Y")
+
+        ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+        ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+        ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+        ## que siempre cambiara en cada analisís
+        storage.child(str(today2)+' - '+str(today3)).put(imgw)
+
+
+
+
