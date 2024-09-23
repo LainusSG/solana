@@ -417,6 +417,7 @@ with st.expander("Organización de Fallas"):
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Tabla de Datos</p>', unsafe_allow_html=True)
 with st.expander("Reporte de Obra"):
     df_sample = filtered_df[["fecha", "obra", "cliente", "tipo_pieza", "pieza", "tipo_soldadura", "tipo_fallas", "categoria", "calificacion","fallas"]]
+    
     df_sample["fecha"] = [
         datetime.datetime.strptime(
             str(target_date).split(" ")[0], '%Y-%m-%d').date()
@@ -430,6 +431,9 @@ with st.expander("Reporte de Obra"):
     st.plotly_chart(fig8, use_container_width=True)
 
 
+
+    fotos = filtered_df[["link"]]
+    
 
 ######################################################################################## 
 st.write("")
@@ -569,6 +573,52 @@ if export_as_pdf:
                 
     pdf.cell(35,10,'',0,2)
     pdf.cell(20)
+
+    x=0
+    y=0
+    pdf.add_page()
+    pdf.ln(15)
+    columnNameList = list(fotos)
+    for row in range(0, len (fotos)):
+        for col_num, col_name in enumerate(columnNameList):
+            if col_num != len(columnNameList) - 1 :
+                pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
+            else: 
+                pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
+                
+                if x < 5: 
+                    pdf.cell(105)
+                    x=x+1
+                    
+                if x==2: 
+                    pdf.ln(90)
+                if x==4: 
+                    pdf.add_page()
+                    pdf.ln(15)
+                    x=0
+                    
+                    
+                
+                
+                    
+                    
+                    
+
+               
+
+                   
+
+                
+                    
+                    
+                
+                
+                
+                
+
+
+
+   
     
     
     
@@ -604,7 +654,7 @@ if export_as_pdf:
     
 
     st.markdown(html, unsafe_allow_html=True)
-    storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
+    #############storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
 
 
 
