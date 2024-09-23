@@ -654,7 +654,7 @@ if export_as_pdf:
     
 
     st.markdown(html, unsafe_allow_html=True)
-    #############storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
+    storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
 
 
 
