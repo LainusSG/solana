@@ -433,7 +433,7 @@ with st.expander("Reporte de Obra"):
 
 
     fotos = filtered_df[["link"]]
-    
+    piezas = filtered_df[["pieza"]]
 
 ######################################################################################## 
 st.write("")
@@ -574,29 +574,37 @@ if export_as_pdf:
     pdf.cell(35,10,'',0,2)
     pdf.cell(20)
 
+
+
+
+
+
     x=0
     y=0
     pdf.add_page()
     pdf.ln(15)
     columnNameList = list(fotos)
+    columnNameList2 = list(piezas)
     for row in range(0, len (fotos)):
-        for col_num, col_name in enumerate(columnNameList):
-            if col_num != len(columnNameList) - 1 :
-                pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
-            else: 
-                pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
-                
-                if x < 5: 
-                    pdf.cell(105)
-                    x=x+1
-                    
-                if x==2: 
-                    pdf.ln(90)
-                if x==4: 
-                    pdf.add_page()
-                    pdf.ln(15)
-                    x=0
-                    
+        for col_num2, col_name2 in enumerate(columnNameList2):
+            for col_num, col_name in enumerate(columnNameList):
+                if col_num != len(columnNameList) - 1 :
+                    pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
+                else: 
+                    pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
+                    pdf.set_font('Arial', '', 12)
+                    pdf.text(pdf.get_x(), pdf.get_y()+75, str(piezas['%s' % (col_name2)].iloc[row]))
+                    if x < 5: 
+                        pdf.cell(105)
+                        x=x+1
+                        
+                    if x==2: 
+                        pdf.ln(90)
+                    if x==4: 
+                        pdf.add_page()
+                        pdf.ln(15)
+                        x=0
+                        
                     
                 
                 
