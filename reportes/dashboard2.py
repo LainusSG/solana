@@ -637,15 +637,15 @@ if export_as_pdf:
 
     ## configuraciones de la base de datos
     firebaseConfig = {
-        "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
-            "authDomain": "soldaduraia.firebaseapp.com",
-        "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
-        "projectId": "soldaduraia",
-        "storageBucket": "soldaduraia.appspot.com",
-        "messagingSenderId": "555516242506",
-        "appId": "1:555516242506:web:83e25c3add2f37773914b3",
-        "measurementId": "G-MVY7HV0Y5Y"
-        }
+        "apiKey": "AIzaSyCZFroPdXsdJQFNdfF88WDffZOYn_33QjU",
+        "authDomain": "soldaduraia-284d6.firebaseapp.com",
+        "databaseURL": "https://soldaduraia-284d6-default-rtdb.firebaseio.com",
+        "projectId": "soldaduraia-284d6",
+        "storageBucket": "soldaduraia-284d6.appspot.com",
+        "messagingSenderId": "23886165016",
+        "appId": "1:23886165016:web:f150736d543a92619bbf6d",
+        "measurementId": "G-QEHMS797NV"
+                            }
 
     firebase = pyrebase.initialize_app(firebaseConfig )
     storage = firebase.storage()
