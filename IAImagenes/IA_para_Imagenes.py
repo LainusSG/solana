@@ -193,14 +193,14 @@ def create_new_form(imagen):
 
                         ## configuraciones de la base de datos
                         firebaseConfig = {
-                            "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
-                            "authDomain": "soldaduraia.firebaseapp.com",
-                            "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
-                            "projectId": "soldaduraia",
-                            "storageBucket": "soldaduraia.appspot.com",
-                            "messagingSenderId": "555516242506",
-                            "appId": "1:555516242506:web:83e25c3add2f37773914b3",
-                            "measurementId": "G-MVY7HV0Y5Y"
+                            "apiKey": "AIzaSyCZFroPdXsdJQFNdfF88WDffZOYn_33QjU",
+                            "authDomain": "soldaduraia-284d6.firebaseapp.com",
+                            "databaseURL": "https://soldaduraia-284d6-default-rtdb.firebaseio.com",
+                            "projectId": "soldaduraia-284d6",
+                            "storageBucket": "soldaduraia-284d6.appspot.com",
+                            "messagingSenderId": "23886165016",
+                            "appId": "1:23886165016:web:f150736d543a92619bbf6d",
+                            "measurementId": "G-QEHMS797NV"
                             }
 
                         firebase = pyrebase.initialize_app(firebaseConfig )
@@ -224,7 +224,7 @@ def create_new_form(imagen):
                         ## que siempre cambiara en cada analisís
                         storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
                         auth = firebase.auth()
-                        user = auth.sign_in_with_email_and_password(email='linolimo22@gmail.com', password='testert')
+                        user = auth.sign_in_with_email_and_password(email='soldaduralab8501@gmail.com', password='SoldaduraLab8501*@')
                         url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
                         url2 = url.split("':")
                         url3= url2[0]
