@@ -100,45 +100,14 @@ def analisis_IA(imagen_obj):
 ################################################################################################################################################################################################################################################
 ################################################################################################################################################################################################################################################        
         ### comienzo del archivo de subida 
-        import pyrebase
-
-        ## configuraciones de la base de datos
-        firebaseConfig = {
-            "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
-            "authDomain": "soldaduraia.firebaseapp.com",
-            "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
-            "projectId": "soldaduraia",
-            "storageBucket": "soldaduraia.appspot.com",
-            "messagingSenderId": "555516242506",
-            "appId": "1:555516242506:web:83e25c3add2f37773914b3",
-            "measurementId": "G-MVY7HV0Y5Y"
-            }
-
-        firebase = pyrebase.initialize_app(firebaseConfig )
-        ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
-        storage = firebase.storage()
-
 
         ## aquí declare la imagen con un nombre arbitrario, lo remplazare con los datos del reporte
         ## esá imagen siempre se guardará con el mismo nombre del archivo para remplazar el archivo existente
         ## pero en la base de datos tomara el nombre que le asigne, en este caso el de la fecha
         pred_img_obj.save("imagenes/pred_img_obj.png")
-        imgw= "imagenes/pred_img_obj.png"
-
-        
-        
-
-        today = datetime.datetime.now()
-        today3 = today.strftime("%H:%M:%S")
-        today2 = today.strftime("%d-%m-%Y")
-
-        ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
-        ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+       
 
 
-        ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
-        ## que siempre cambiara en cada analisís
-        storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
 
 ################################################################################################################################################################################################################################################
 ################################################################################################################################################################################################################################################
@@ -148,7 +117,7 @@ def analisis_IA(imagen_obj):
 ################################################################################################################################################################################################################################################
     return valorfalla
 
-        
+
 
 
 
@@ -211,6 +180,8 @@ def create_new_form(imagen):
         Categoria = st.text_input("Categoría", "")
 
         Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+
         submit = st.form_submit_button(label="Submit")
         if submit:
              if imagen is not None:
@@ -218,8 +189,47 @@ def create_new_form(imagen):
                 TotalFallas= realizar_limpieza(valorfalla)
                 with conn.session as s:
                     for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
-                        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas );'),
-                        params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1 )
+                        import pyrebase
+
+                        ## configuraciones de la base de datos
+                        firebaseConfig = {
+                            "apiKey": "AIzaSyCfThEEfRDrrxu-HI-aHdYf2LIrL4wDc8I",
+                            "authDomain": "soldaduraia.firebaseapp.com",
+                            "databaseURL": "https://console.firebase.google.com/u/0/project/soldaduraia/database/soldaduraia-default-rtdb/data/~2F?hl=en-419",
+                            "projectId": "soldaduraia",
+                            "storageBucket": "soldaduraia.appspot.com",
+                            "messagingSenderId": "555516242506",
+                            "appId": "1:555516242506:web:83e25c3add2f37773914b3",
+                            "measurementId": "G-MVY7HV0Y5Y"
+                            }
+
+                        firebase = pyrebase.initialize_app(firebaseConfig )
+                        ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+                        storage = firebase.storage()
+
+                        imgw= "imagenes/pred_img_obj.png"
+
+                        
+                        
+
+                        today = datetime.datetime.now()
+                        today3 = today.strftime("%H:%M:%S")
+                        today2 = today.strftime("%d-%m-%Y")
+
+                        ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+                        ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+                        ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+                        ## que siempre cambiara en cada analisís
+                        storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                        auth = firebase.auth()
+                        user = auth.sign_in_with_email_and_password(email='linolimo22@gmail.com', password='testert')
+                        url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
+                        url2 = url.split("':")
+                        url3= url2[0]
+                        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
+                        params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
                                     )
                     
                         s.commit()
