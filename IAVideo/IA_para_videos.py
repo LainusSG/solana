@@ -145,14 +145,14 @@ def create_new_form():
                                         ## configuraciones de la base de datos
                                         
                                         firebaseConfig = {
-                                            "apiKey": "AIzaSyCZFroPdXsdJQFNdfF88WDffZOYn_33QjU",
-                                            "authDomain": "soldaduraia-284d6.firebaseapp.com",
-                                            "databaseURL": "https://soldaduraia-284d6-default-rtdb.firebaseio.com",
-                                            "projectId": "soldaduraia-284d6",
-                                            "storageBucket": "soldaduraia-284d6.appspot.com",
-                                            "messagingSenderId": "23886165016",
-                                            "appId": "1:23886165016:web:f150736d543a92619bbf6d",
-                                            "measurementId": "G-QEHMS797NV"
+                                            "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
+                                            "authDomain": "solanaia.firebaseapp.com",
+                                            "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
+                                            "projectId": "solanaia",
+                                            "storageBucket": "solanaia.appspot.com",
+                                            "messagingSenderId": "781444992537",
+                                            "appId": "1:781444992537:web:5986510634d48fc259e488",
+                                            "measurementId": "G-Z1Q8XZ19SR"
                                             }
 
 
@@ -177,7 +177,7 @@ def create_new_form():
                                         ## que siempre cambiara en cada analisís
                                         storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
                                         auth = firebase.auth()
-                                        user = auth.sign_in_with_email_and_password(email='soldaduralab8501@gmail.com', password='SoldaduraLab8501*@')
+                                        user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
                                         url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
                                         url2 = url.split("':")
                                         url3= url2[0]
