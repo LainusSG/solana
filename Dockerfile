@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY /app .
 #RUN pip3 install -r requirements.txt
-RUN pip3 install streamlit streamlit-webrtc opencv-python-headless streamlit-authenticator matplotlib fpdf kaleido plotly sqlalchemy datetime psycopg2-binary
+RUN pip3 install streamlit streamlit-webrtc opencv-python-headless streamlit-authenticator matplotlib fpdf kaleido plotly sqlalchemy datetime psycopg2-binary  requests-toolbelt==0.10.1 Pyrebase4==4.6.0 urllib3==1.26.15
 
 EXPOSE 80
 

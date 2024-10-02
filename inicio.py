@@ -4,6 +4,13 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_authenticator.utilities.hasher import Hasher
 import base64
+from streamlit_authenticator.utilities import (CredentialsError,
+                                               ForgotError,
+                                               Hasher,
+                                               LoginError,
+                                               RegisterError,
+                                               ResetError,
+                                               UpdateError)
 
 
 
@@ -53,10 +60,15 @@ authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],
     config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['pre-authorized']
+    config['cookie']['expiry_days']
 )
-name, authentication_status, username = authenticator.login()
+try:
+    authenticator.login()
+except LoginError as e:
+    st.error(e)
+
+
+
 
 bienvenida = st.Page(
     "bienvenida.py", title="Inicio", icon=":material/home:", default=True
@@ -109,7 +121,7 @@ st.markdown(custom_css, unsafe_allow_html=True)
 if st.session_state["authentication_status"]:
     authenticator.logout('Salir', 'sidebar', key='unique_key')
 
-    if username == 'casho':
+    if st.session_state["username"] == 'casho':
         
         
         #st.title('Admin Casho')
@@ -123,7 +135,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    elif username == 'solana':
+    elif st.session_state["username"] == 'solana':
         #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
         
         #st.title('Usuario')
@@ -137,7 +149,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    elif username == 'user':
+    elif st.session_state["username"] == 'user':
         #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
         
         #st.title('Usuario')

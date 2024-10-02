@@ -5,18 +5,21 @@ credentials:
       failed_login_attempts: 0 # Will be managed automatically
       logged_in: False # Will be managed automatically
       name: Casimiro Gómez
+      username: casho
       password: abc # Will be hashed automatically
     solana:
       email: rbriggs@gmail.com
       failed_login_attempts: 0 # Will be managed automatically
       logged_in: False # Will be managed automatically
       name: Estructuras Solana
+      username: solana
       password: def # Will be hashed automatically
     user:
       email: usuarios@test.com
       failed_login_attempts: 0 # Will be managed automatically
       logged_in: False # Will be managed automatically
       name: Usuario
+      username: user
       password: $2b$12$JnSfv.6oxL04XgFMv0CmLOXJaNOUQkcjszRXIA57XJ//yD2crNvaS # Will be hashed automatically
 cookie:
   expiry_days: 30
