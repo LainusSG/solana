@@ -49,13 +49,13 @@ def subir_imagen():
 
         # Validando Archivo
 
-        if detalles_archivo['filetype'] in ('image/png', 'image/jpeg'):
-            st.success('Tipos de Archivos de IMAGEN Válidos (png o jpeg)')
+        if detalles_archivo['filetype'] in ('image/png'):
+            st.success('Tipos de Archivos de IMAGEN Válidos (png)')
             return {"archivo": archivo_imagen, "detalles": detalles_archivo}
 
         else:
             st.error('Tipo de archivo de imagen inválido')
-            st.error('Subir solamente png, jpg, jpeg')
+            st.error('Subir solamente PNG')
             return None
 
 def capturar_imagen():
@@ -166,76 +166,298 @@ def realizar_limpieza(valorfalla):
 
 
 def create_new_form(imagen):
-    with st.form("myform", clear_on_submit=True):
-        Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
 
-        Obra = st.text_input("Obra", "")
+    conn = st.connection("postgresql", type="sql")
+    #df = pd.read_csv("reportes/Graficas3.csv", encoding = "ISO-8859-1")
+    df= conn.query('select * from soldadura;', ttl="1s")
 
-        Cliente = st.text_input("Cliente", "")
+    col1, col2,col3 = st.columns((3), vertical_alignment="center")
+    with col1:
+        empresa_nueva = st.checkbox("Nueva Obra")
+    with col2:
+        cliente_nuevo = st.checkbox("Nuevo Cliente ")
+    with col3:
+        ClienteEmpresa_nuevo = st.checkbox("Cliente y Obra Nuevos")
+    
 
-        Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+    if not empresa_nueva and not cliente_nuevo and not ClienteEmpresa_nuevo:
+        with st.form("1", clear_on_submit=True):
+            Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+            
+            Obra = st.selectbox("Obra", (df["obra"]))
+            
 
-        Pieza = st.text_input("Pieza", "")
+            Cliente = st.selectbox("Cliente",  (df["cliente"]))
+            
 
-        Categoria = st.text_input("Categoría", "")
+            Tipo_Pieza = st.text_input("Tipo de Pieza", "")
 
-        Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+            Pieza = st.text_input("Pieza", "")
+
+            Categoria = st.text_input("Categoría", "")
+
+            Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
 
 
-        submit = st.form_submit_button(label="Submit")
-        if submit:
-             if imagen is not None:
-                valorfalla= analisis_IA(imagen)
-                TotalFallas= realizar_limpieza(valorfalla)
-                with conn.session as s:
-                    for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
-                        import pyrebase
+            submit = st.form_submit_button(label="Submit")
+            if submit:
+                if imagen is not None:
+                    valorfalla= analisis_IA(imagen)
+                    TotalFallas= realizar_limpieza(valorfalla)
+                    with conn.session as s:
+                        for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
+                            import pyrebase
 
-                        ## configuraciones de la base de datos
-                        firebaseConfig = {
-                            "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
-                            "authDomain": "solanaia.firebaseapp.com",
-                            "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
-                            "projectId": "solanaia",
-                            "storageBucket": "solanaia.appspot.com",
-                            "messagingSenderId": "781444992537",
-                            "appId": "1:781444992537:web:5986510634d48fc259e488",
-                            "measurementId": "G-Z1Q8XZ19SR"
-                            }
+                            ## configuraciones de la base de datos
+                            firebaseConfig = {
+                                "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
+                                "authDomain": "solanaia.firebaseapp.com",
+                                "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
+                                "projectId": "solanaia",
+                                "storageBucket": "solanaia.appspot.com",
+                                "messagingSenderId": "781444992537",
+                                "appId": "1:781444992537:web:5986510634d48fc259e488",
+                                "measurementId": "G-Z1Q8XZ19SR"
+                                }
 
-                        firebase = pyrebase.initialize_app(firebaseConfig )
-                        ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
-                        storage = firebase.storage()
+                            firebase = pyrebase.initialize_app(firebaseConfig )
+                            ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+                            storage = firebase.storage()
 
-                        imgw= "imagenes/pred_img_obj.png"
+                            imgw= "imagenes/pred_img_obj.png"
 
+                            
+                            
+
+                            today = datetime.datetime.now()
+                            today3 = today.strftime("%H:%M:%S")
+                            today2 = today.strftime("%d-%m-%Y")
+
+                            ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+                            ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+                            ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+                            ## que siempre cambiara en cada analisís
+                            storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                            auth = firebase.auth()
+                            user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
+                            url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
+                            url2 = url.split("':")
+                            url3= url2[0]
+                            s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
+                            params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
+                                        )
                         
+                            s.commit()
+            
+    if empresa_nueva==True:
+        with st.form("2", clear_on_submit=True):
+            Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+            
+            Obra = st.text_input("Obra", "")
+
+            Cliente = st.selectbox("Cliente", (df["cliente"]))
+
+            Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+
+            Pieza = st.text_input("Pieza", "")
+
+            Categoria = st.text_input("Categoría", "")
+
+            Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+
+            submit = st.form_submit_button(label="Submit")
+            if submit:
+                if imagen is not None:
+                    valorfalla= analisis_IA(imagen)
+                    TotalFallas= realizar_limpieza(valorfalla)
+                    with conn.session as s:
+                        for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
+                            import pyrebase
+
+                            ## configuraciones de la base de datos
+                            firebaseConfig = {
+                                "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
+                                "authDomain": "solanaia.firebaseapp.com",
+                                "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
+                                "projectId": "solanaia",
+                                "storageBucket": "solanaia.appspot.com",
+                                "messagingSenderId": "781444992537",
+                                "appId": "1:781444992537:web:5986510634d48fc259e488",
+                                "measurementId": "G-Z1Q8XZ19SR"
+                                }
+
+                            firebase = pyrebase.initialize_app(firebaseConfig )
+                            ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+                            storage = firebase.storage()
+
+                            imgw= "imagenes/pred_img_obj.png"
+
+                            
+                            
+
+                            today = datetime.datetime.now()
+                            today3 = today.strftime("%H:%M:%S")
+                            today2 = today.strftime("%d-%m-%Y")
+
+                            ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+                            ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+                            ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+                            ## que siempre cambiara en cada analisís
+                            storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                            auth = firebase.auth()
+                            user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
+                            url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
+                            url2 = url.split("':")
+                            url3= url2[0]
+                            s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
+                            params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
+                                        )
                         
-
-                        today = datetime.datetime.now()
-                        today3 = today.strftime("%H:%M:%S")
-                        today2 = today.strftime("%d-%m-%Y")
-
-                        ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
-                        ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
-
-
-                        ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
-                        ## que siempre cambiara en cada analisís
-                        storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
-                        auth = firebase.auth()
-                        user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
-                        url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
-                        url2 = url.split("':")
-                        url3= url2[0]
-                        s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
-                        params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
-                                    )
-                    
-                        s.commit()
+                            s.commit()
+    
                         
+    if cliente_nuevo==True:
+        with st.form("3", clear_on_submit=True):
+            Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+            
+            Obra = st.selectbox("Obra", (df["obra"]))
 
+            Cliente = st.text_input("Cliente", "")
+
+            Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+
+            Pieza = st.text_input("Pieza", "")
+
+            Categoria = st.text_input("Categoría", "")
+
+            Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+
+            submit = st.form_submit_button(label="Submit")
+            if submit:
+                if imagen is not None:
+                    valorfalla= analisis_IA(imagen)
+                    TotalFallas= realizar_limpieza(valorfalla)
+                    with conn.session as s:
+                        for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
+                            import pyrebase
+
+                            ## configuraciones de la base de datos
+                            firebaseConfig = {
+                                "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
+                                "authDomain": "solanaia.firebaseapp.com",
+                                "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
+                                "projectId": "solanaia",
+                                "storageBucket": "solanaia.appspot.com",
+                                "messagingSenderId": "781444992537",
+                                "appId": "1:781444992537:web:5986510634d48fc259e488",
+                                "measurementId": "G-Z1Q8XZ19SR"
+                                }
+
+                            firebase = pyrebase.initialize_app(firebaseConfig )
+                            ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+                            storage = firebase.storage()
+
+                            imgw= "imagenes/pred_img_obj.png"
+
+                            
+                            
+
+                            today = datetime.datetime.now()
+                            today3 = today.strftime("%H:%M:%S")
+                            today2 = today.strftime("%d-%m-%Y")
+
+                            ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+                            ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+                            ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+                            ## que siempre cambiara en cada analisís
+                            storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                            auth = firebase.auth()
+                            user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
+                            url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
+                            url2 = url.split("':")
+                            url3= url2[0]
+                            s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
+                            params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
+                                        )
+                        
+                            s.commit()
                 
+    if ClienteEmpresa_nuevo==True:
+        with st.form("4", clear_on_submit=True):
+            Fecha = st.date_input("Fecha", datetime.datetime.now(), format="DD/MM/YYYY")
+            
+            Obra = st.text_input("Obra", "")
+
+            Cliente = st.text_input("Cliente", "")
+
+            Tipo_Pieza = st.text_input("Tipo de Pieza", "")
+
+            Pieza = st.text_input("Pieza", "")
+
+            Categoria = st.text_input("Categoría", "")
+
+            Tipo_soldadura = st.text_input("Tipo de Soldadura", "")
+
+
+            submit = st.form_submit_button(label="Submit")
+            if submit:
+                if imagen is not None:
+                    valorfalla= analisis_IA(imagen)
+                    TotalFallas= realizar_limpieza(valorfalla)
+                    with conn.session as s:
+                        for [calificacion1, tipo_fallas1, fallas1] in TotalFallas:
+                            import pyrebase
+
+                            ## configuraciones de la base de datos
+                            firebaseConfig = {
+                                "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
+                                "authDomain": "solanaia.firebaseapp.com",
+                                "databaseURL": "https://solanaia-default-rtdb.firebaseio.com",
+                                "projectId": "solanaia",
+                                "storageBucket": "solanaia.appspot.com",
+                                "messagingSenderId": "781444992537",
+                                "appId": "1:781444992537:web:5986510634d48fc259e488",
+                                "measurementId": "G-Z1Q8XZ19SR"
+                                }
+
+                            firebase = pyrebase.initialize_app(firebaseConfig )
+                            ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
+                            storage = firebase.storage()
+
+                            imgw= "imagenes/pred_img_obj.png"
+
+                            
+                            
+
+                            today = datetime.datetime.now()
+                            today3 = today.strftime("%H:%M:%S")
+                            today2 = today.strftime("%d-%m-%Y")
+
+                            ## el estorage child es el nombre con el que guardaremos el archivo en la base de datos
+                            ## no uncluiur "/" en el nombre, ya que el programa lo reconocé como rutas y crea sub carpetas
+
+
+                            ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
+                            ## que siempre cambiara en cada analisís
+                            storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                            auth = firebase.auth()
+                            user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
+                            url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  
+                            url2 = url.split("':")
+                            url3= url2[0]
+                            s.execute(text('INSERT INTO soldadura (fecha, calificacion, obra, cliente, tipo_pieza, pieza, categoria, tipo_soldadura, tipo_fallas, fallas, link) VALUES (:fecha, :calificacion, :obra, :cliente, :tipo_pieza, :pieza, :categoria, :tipo_soldadura, :tipo_fallas, :fallas, :link  );'),
+                            params=dict(fecha=Fecha, calificacion =calificacion1, obra=Obra, cliente=Cliente,  tipo_pieza = Tipo_Pieza, pieza=Pieza, categoria=Categoria, tipo_soldadura=Tipo_soldadura, tipo_fallas=tipo_fallas1, fallas= fallas1, link=url3 )
+                                        )
+                        
+                            s.commit()
 
 imagen=capturar_imagen()
 create_new_form(imagen)

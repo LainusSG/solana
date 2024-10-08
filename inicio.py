@@ -81,7 +81,7 @@ Dashboard = st.Page(
 )
 
 IAVideo = st.Page(
-    "IAVideo/IA_para_videos.py", title="IA para procesar videos", icon=":material/camera:"
+    "IAVideo/2222.py", title="IA para procesar videos", icon=":material/camera:"
 )
 About = st.Page(
     "About.py", title="Acerca de", icon=":material/search:"
