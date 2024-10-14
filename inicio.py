@@ -121,40 +121,8 @@ st.markdown(custom_css, unsafe_allow_html=True)
 if st.session_state["authentication_status"]:
     authenticator.logout('Salir', 'sidebar', key='unique_key')
 
-    if st.session_state["username"] == 'casho':
-        
-        
-        #st.title('Admin Casho')
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif st.session_state["username"] == 'solana':
-    #or  st.session_state["username"] == 'david' or  st.session_state["username"] == 'julio' or  st.session_state["username"] == 'paola' or  st.session_state["username"] == 'victor' or  st.session_state["username"] == 'jonathan' or  st.session_state["username"] == 'javier':
-        #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
-        
-        #st.title('Usuario')
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-        
-    elif st.session_state["username"] == 'user':
-        #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
-        
-        #st.title('Usuario')
+    if st.session_state["username"] == 'user':
+
         pg = st.navigation(
         {
             "Inicio":[bienvenida2],
@@ -163,6 +131,22 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
+
+    else:
+    #or  st.session_state["username"] == 'david' or  st.session_state["username"] == 'julio' or  st.session_state["username"] == 'paola' or  st.session_state["username"] == 'victor' or  st.session_state["username"] == 'jonathan' or  st.session_state["username"] == 'javier':
+
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+        
+   
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password es incorrecto')
 elif st.session_state["authentication_status"] is None:

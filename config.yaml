@@ -18,48 +18,48 @@ credentials:
       last_name: Solana
       logged_in: False 
       password: Solana.2024 
-    David:
-      email: ddelarosa@emetalicas.com.mx
-      failed_login_attempts: 0
-      first_name: David
-      last_name: de la Rosa
-      logged_in: False 
-      password: David.delarosa.2024
-    Julio:
-      email: csanchez@emetalicas.com.mx
-      failed_login_attempts: 0
-      first_name: Julio
-      last_name: Sanchez
-      logged_in: False
-      password: Julio.sanchez.2024
-    Paola:
-      email: calidadempsa@emetalicas.com.mx
-      failed_login_attempts: 0
-      first_name: Paola
-      last_name: Cariño
-      logged_in: False
-      password: Paola.carino.2024
-    Victor:
-      email: vrendon@emetalicas.com.mx
-      failed_login_attempts: 0
-      first_name: Victor
-      last_name: Rendon
-      logged_in: False
-      password: Victor.rendon.2024
-    Jonathan:
-      email: jehlinger@emetalicas.com.mx
-      failed_login_attempts: 0
-      first_name: Jonathan
-      last_name: Ehlinger
-      logged_in: False
-      password: Jonathan.ehlinger.2024
-    Javier:
-      email: javier@solana.mx
-      failed_login_attempts: 0
-      first_name: Javier
-      last_name: Solana
-      logged_in: False
-      password: Javier.solana.2024
+    # David:
+    #   email: ddelarosa@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   first_name: David
+    #   last_name: de la Rosa
+    #   logged_in: False 
+    #   password: David.delarosa.2024
+    # Julio:
+    #   email: csanchez@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   first_name: Julio
+    #   last_name: Sanchez
+    #   logged_in: False
+    #   password: Julio.sanchez.2024
+    # Paola:
+    #   email: calidadempsa@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   first_name: Paola
+    #   last_name: Cariño
+    #   logged_in: False
+    #   password: Paola.carino.2024
+    # Victor:
+    #   email: vrendon@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   first_name: Victor
+    #   last_name: Rendon
+    #   logged_in: False
+    #   password: Victor.rendon.2024
+    # Jonathan:
+    #   email: jehlinger@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   first_name: Jonathan
+    #   last_name: Ehlinger
+    #   logged_in: False
+    #   password: Jonathan.ehlinger.2024
+    # Javier:
+    #   email: javier@solana.mx
+    #   failed_login_attempts: 0
+    #   first_name: Javier
+    #   last_name: Solana
+    #   logged_in: False
+    #   password: Javier.solana.2024
     User:
       email: usuarios@test.com
       failed_login_attempts: 0
