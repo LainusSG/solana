@@ -28,7 +28,7 @@ yolo = YOLO_Pred('./models/best.onnx',
 
 
 confidence_slider = 0.25
-video_file = st.file_uploader('Sube vídeo', type=['mp4', 'avi', 'mov', 'mkv'])
+video_file = st.file_uploader('Sube vídeo', type=['mp4'])
 if video_file:
     tfile = tempfile.NamedTemporaryFile(delete=False)
     tfile.write(video_file.read())
