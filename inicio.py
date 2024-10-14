@@ -60,12 +60,10 @@ authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],
     config['cookie']['key'],
-    config['cookie']['expiry_days']
+    config['cookie']['expiry_days'],
+    config['pre-authorized']
 )
-try:
-    authenticator.login()
-except LoginError as e:
-    st.error(e)
+name, authentication_status, username = authenticator.login()
 
 
 
@@ -121,8 +119,7 @@ st.markdown(custom_css, unsafe_allow_html=True)
 if st.session_state["authentication_status"]:
     authenticator.logout('Salir', 'sidebar', key='unique_key')
 
-    if st.session_state["username"] == 'user':
-
+    if username == 'user':
         pg = st.navigation(
         {
             "Inicio":[bienvenida2],
@@ -131,10 +128,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-
     else:
-    #or  st.session_state["username"] == 'david' or  st.session_state["username"] == 'julio' or  st.session_state["username"] == 'paola' or  st.session_state["username"] == 'victor' or  st.session_state["username"] == 'jonathan' or  st.session_state["username"] == 'javier':
-
         pg = st.navigation(
         {
             "Inicio":[bienvenida],
@@ -145,7 +139,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-        
+
    
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password es incorrecto')
