@@ -135,7 +135,8 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    elif st.session_state["username"] == 'solana' or  st.session_state["username"] == 'david' or  st.session_state["username"] == 'julio' or  st.session_state["username"] == 'paola' or  st.session_state["username"] == 'victor' or  st.session_state["username"] == 'jonathan' or  st.session_state["username"] == 'javier':
+    elif st.session_state["username"] == 'solana':
+    #or  st.session_state["username"] == 'david' or  st.session_state["username"] == 'julio' or  st.session_state["username"] == 'paola' or  st.session_state["username"] == 'victor' or  st.session_state["username"] == 'jonathan' or  st.session_state["username"] == 'javier':
         #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
         
         #st.title('Usuario')
@@ -149,6 +150,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
+        
     elif st.session_state["username"] == 'user':
         #st.markdown(f'<p style="display: block; text-align:right; font-size: 24px;color: #000;font-weight: bold;">Bienvenido {st.session_state["name"]} !!</p>', unsafe_allow_html=True)
         
