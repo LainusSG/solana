@@ -1,53 +1,53 @@
 credentials:
   usernames:
-    casho:
-      email: casho.gomez@gmail.com
-      failed_login_attempts: 0
-      name: Casimiro Gómez
-      logged_in: False
-      password: abc
+    # casho:
+    #   email: casho.gomez@gmail.com
+    #   failed_login_attempts: 0
+    #   name: Casimiro Gómez
+    #   logged_in: False
+    #   password: abc
     solana:
       email: rbriggs@gmail.com
       failed_login_attempts: 0
       name: Estructuras Solana
       logged_in: False 
       password: Solana.2024 
-    david:
-      email: ddelarosa@emetalicas.com.mx
-      failed_login_attempts: 0
-      name: David de la Rosa
-      logged_in: False 
-      password: David.delarosa.2024
-    julio:
-      email: csanchez@emetalicas.com.mx
-      failed_login_attempts: 0
-      name: Julio Sanchez
-      logged_in: False
-      password: Julio.sanchez.2024
-    paola:
-      email: calidadempsa@emetalicas.com.mx
-      failed_login_attempts: 0
-      name: Paola Cariño
-      logged_in: False
-      password: Paola.carino.2024
-    victor:
-      email: vrendon@emetalicas.com.mx
-      failed_login_attempts: 0
-      name: Victor Rendon
-      logged_in: False
-      password: Victor.rendon.2024
-    jonathan:
-      email: jehlinger@emetalicas.com.mx
-      failed_login_attempts: 0
-      name: Jonathan Ehlinger
-      logged_in: False
-      password: Jonathan.ehlinger.2024
-    javier:
-      email: javier@solana.mx
-      failed_login_attempts: 0
-      name: Javier Solana
-      logged_in: False
-      password: Javier.solana.2024
+    # david:
+    #   email: ddelarosa@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   name: David de la Rosa
+    #   logged_in: False 
+    #   password: David.delarosa.2024
+    # julio:
+    #   email: csanchez@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   name: Julio Sanchez
+    #   logged_in: False
+    #   password: Julio.sanchez.2024
+    # paola:
+    #   email: calidadempsa@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   name: Paola Cariño
+    #   logged_in: False
+    #   password: Paola.carino.2024
+    # victor:
+    #   email: vrendon@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   name: Victor Rendon
+    #   logged_in: False
+    #   password: Victor.rendon.2024
+    # jonathan:
+    #   email: jehlinger@emetalicas.com.mx
+    #   failed_login_attempts: 0
+    #   name: Jonathan Ehlinger
+    #   logged_in: False
+    #   password: Jonathan.ehlinger.2024
+    # javier:
+    #   email: javier@solana.mx
+    #   failed_login_attempts: 0
+    #   name: Javier Solana
+    #   logged_in: False
+    #   password: Javier.solana.2024
     user:
       email: usuarios@test.com
       failed_login_attempts: 0

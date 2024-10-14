@@ -128,7 +128,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    elif username == 'casho':
+    else:
         pg = st.navigation(
         {
             "Inicio":[bienvenida],
@@ -139,84 +139,6 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    elif username == 'solana':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'david':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'julio':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'paola':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'victor':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'jonathan':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-    elif username == 'javier':
-        pg = st.navigation(
-        {
-            "Inicio":[bienvenida],
-            "IAImagenes": [IAImagenes],
-            "IAVideo": [IAVideo],
-            "Reportes": [Dashboard],
-            "About":[About]
-        }
-        )
-        pg.run()
-
 
    
 elif st.session_state["authentication_status"] is False:
