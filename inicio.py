@@ -4,16 +4,6 @@ from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 from streamlit_authenticator.utilities.hasher import Hasher
 import base64
-from streamlit_authenticator.utilities import (CredentialsError,
-                                               ForgotError,
-                                               Hasher,
-                                               LoginError,
-                                               RegisterError,
-                                               ResetError,
-                                               UpdateError)
-
-
-
 
 
 st.set_page_config(page_title="SolanaIA", page_icon="reportes/lluvia.ico", layout="wide")
@@ -55,7 +45,7 @@ with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
     
-Hasher.hash_passwords(config['credentials'])
+#Hasher.hash_passwords(config['credentials'])
 authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],
@@ -128,7 +118,7 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
-    else:
+    elif username == 'casho':
         pg = st.navigation(
         {
             "Inicio":[bienvenida],
@@ -139,6 +129,84 @@ if st.session_state["authentication_status"]:
         }
         )
         pg.run()
+    elif username == 'solana':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'david':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'julio':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'paola':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'victor':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'jonathan':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+    elif username == 'javier':
+        pg = st.navigation(
+        {
+            "Inicio":[bienvenida],
+            "IAImagenes": [IAImagenes],
+            "IAVideo": [IAVideo],
+            "Reportes": [Dashboard],
+            "About":[About]
+        }
+        )
+        pg.run()
+
 
    
 elif st.session_state["authentication_status"] is False:
