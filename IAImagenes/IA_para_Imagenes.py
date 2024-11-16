@@ -49,13 +49,12 @@ def subir_imagen():
 
         # Validando Archivo
 
-        if detalles_archivo['filetype'] in ('image/png'):
-            st.success('Tipos de Archivos de IMAGEN Válidos (png)')
+        if detalles_archivo['filetype'] in ('image/png', 'image/jpeg',  'image/jpg'):
+            st.success('Tipos de Archivos de IMAGEN Válidos (png, jpeg, jpg)')
             return {"archivo": archivo_imagen, "detalles": detalles_archivo}
 
         else:
             st.error('Tipo de archivo de imagen inválido')
-            st.error('Subir solamente PNG')
             return None
 
 def capturar_imagen():
