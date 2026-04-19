@@ -40,6 +40,7 @@ INFERENCE_INPUT_SIZE = 640
 PROCESS_EVERY_N_FRAMES = 2
 CAMERA_STARTUP_PASSTHROUGH_FRAMES = 8
 LOCAL_RTC_CONFIGURATION = RTCConfiguration({"iceServers": []})
+PREDICTED_FRAME_PATH = "imagenes/pred_img_obj.png"
 
 
 def resize_frame(img, max_width):
@@ -73,7 +74,7 @@ def serialize_detection_labels(detections):
     return [f'{item["class_name"]}: {int(item["confidence"] * 100)}%' for item in detections]
 
 
-def run_inference_async(display_img, inference_img):
+def run_inference_async(source_img, display_img, inference_img):
     try:
         detections = yolo.detect(inference_img, input_size=INFERENCE_INPUT_SIZE)
         if inference_img.shape[:2] != display_img.shape[:2]:
@@ -82,6 +83,16 @@ def run_inference_async(display_img, inference_img):
                 display_img.shape[1] / inference_img.shape[1],
                 display_img.shape[0] / inference_img.shape[0],
             )
+        if detections:
+            save_detections = detections
+            if source_img.shape[:2] != display_img.shape[:2]:
+                save_detections = scale_detections(
+                    detections,
+                    source_img.shape[1] / display_img.shape[1],
+                    source_img.shape[0] / display_img.shape[0],
+                )
+            annotated_img = yolo.draw_detections(source_img, save_detections)
+            cv2.imwrite(PREDICTED_FRAME_PATH, annotated_img)
         with lock:
             stream_state["last_detections"] = detections
     except cv2.error:
@@ -103,7 +114,7 @@ def video_frame_callback(frame):
         stream_state["frame_index"] += 1
         if stream_state["frame_index"] <= CAMERA_STARTUP_PASSTHROUGH_FRAMES:
             img_container["img"] = display_img
-            img_container["raw_img"] = display_img.copy()
+            img_container["raw_img"] = source_img.copy()
             img_container["data"] = []
             return av.VideoFrame.from_ndarray(display_img, format="bgr24")
 
@@ -116,14 +127,14 @@ def video_frame_callback(frame):
             stream_state["inference_running"] = True
             threading.Thread(
                 target=run_inference_async,
-                args=(display_img.copy(), inference_img.copy()),
+                args=(source_img.copy(), display_img.copy(), inference_img.copy()),
                 daemon=True,
             ).start()
 
         pred_img = yolo.draw_detections(display_img, stream_state["last_detections"])
         falla_detectada = serialize_detection_labels(stream_state["last_detections"])
         img_container["img"] = pred_img
-        img_container["raw_img"] = display_img.copy()
+        img_container["raw_img"] = source_img.copy()
         img_container["data"] = falla_detectada
     return av.VideoFrame.from_ndarray(pred_img, format="bgr24")
 
@@ -277,7 +288,7 @@ def create_new_form():
 
                                         ## la funcion put sube la variable o el archivo que este contenido entre parentesis en este caso la foto
                                         ## que siempre cambiara en cada analisís
-                                        storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
+                                        #storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).put(imgw)
                                         auth = firebase.auth()
                                         user = auth.sign_in_with_email_and_password(email='calidad@solana.mx', password='Calidad.2024*')
                                         url = storage.child('IMAGENES/'+str(today2)+' - '+str(today3)).get_url(user)  

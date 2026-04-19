@@ -12,15 +12,9 @@ class YOLO_Pred:
         self.nc = data_yaml["nc"]
 
         self.yolo = cv2.dnn.readNetFromONNX(onnx_model)
+        cv2.ocl.setUseOpenCL(False)
         self.yolo.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-        if cv2.ocl.haveOpenCL():
-            cv2.ocl.setUseOpenCL(True)
-            try:
-                self.yolo.setPreferableTarget(cv2.dnn.DNN_TARGET_OPENCL_FP16)
-            except cv2.error:
-                self.yolo.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
-        else:
-            self.yolo.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+        self.yolo.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
         np.random.seed(10)
         self.colors = np.random.randint(100, 255, size=(self.nc, 3)).tolist()
