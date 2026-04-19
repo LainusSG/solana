@@ -5,6 +5,7 @@ from yolo_prediccion import YOLO_Pred
 import datetime
 import threading
 from matplotlib import pyplot as plt
+import os
 
 import cv2
 from sqlalchemy import text
@@ -41,6 +42,8 @@ PROCESS_EVERY_N_FRAMES = 2
 CAMERA_STARTUP_PASSTHROUGH_FRAMES = 8
 LOCAL_RTC_CONFIGURATION = RTCConfiguration({"iceServers": []})
 PREDICTED_FRAME_PATH = "imagenes/pred_img_obj.png"
+CAPTURE_WIDTH = 1920
+CAPTURE_HEIGHT = 1080
 
 
 def resize_frame(img, max_width):
@@ -92,7 +95,11 @@ def run_inference_async(source_img, display_img, inference_img):
                     source_img.shape[0] / display_img.shape[0],
                 )
             annotated_img = yolo.draw_detections(source_img, save_detections)
-            cv2.imwrite(PREDICTED_FRAME_PATH, annotated_img)
+            cv2.imwrite(
+                PREDICTED_FRAME_PATH,
+                annotated_img,
+                [cv2.IMWRITE_PNG_COMPRESSION, 0],
+            )
         with lock:
             stream_state["last_detections"] = detections
     except cv2.error:
@@ -146,8 +153,8 @@ ctx = webrtc_streamer(
     rtc_configuration=LOCAL_RTC_CONFIGURATION,
     media_stream_constraints={
         "video": {
-            "width": {"ideal": 1280},
-            "height": {"ideal": 720},
+            "width": {"ideal": CAPTURE_WIDTH},
+            "height": {"ideal": CAPTURE_HEIGHT},
             "frameRate": {"ideal": 24},
         },
         "audio": False,
@@ -271,9 +278,9 @@ def create_new_form():
                                         ## declaracion de que funicion queremos usar, en este caso "storage" para almacenar ahi nuestras fotos dentro del bucket
                                         storage = firebase.storage()
 
-                                        imgw= "imagenes/pred_img_obj.png"
-                                        if raw_img is not None:
-                                            cv2.imwrite(imgw, raw_img)
+                                        imgw = PREDICTED_FRAME_PATH
+                                        if not os.path.exists(imgw):
+                                            continue
 
                                         
                                         
