@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.express as px
 import pandas as pd
 import os
@@ -345,10 +346,47 @@ fig9.write_image("reportes/images/fig5.png")
 fig10.write_image("reportes/images/fig6.png")
 fig8.write_image("reportes/images/fig7.png")
 
-def create_download_link(val, filename):
-    b64 = base64.b64encode(val)  # val looks like b'...'
-    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{filename}.pdf">Descargar PDF</a>'
+def trigger_pdf_download(val, filename):
+    button_placeholder = st.empty()
+    with button_placeholder.container():
+        st.download_button(
+            "DescargaPDFAutomatica",
+            data=val,
+            file_name=f"{filename}.pdf",
+            mime="application/pdf",
+            key="auto_download_pdf_button",
+        )
+    components.html(
+        """
+        <script>
+            const clickAutoDownload = () => {
+                const parentDoc = window.parent.document;
+                const buttons = Array.from(parentDoc.querySelectorAll("button"));
+                const target = buttons.find((btn) => btn.innerText && btn.innerText.includes("DescargaPDFAutomatica"));
+                if (target) {
+                    target.click();
+                    return true;
+                }
+                return false;
+            };
+
+            if (!clickAutoDownload()) {
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    attempts += 1;
+                    if (clickAutoDownload() || attempts > 20) {
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        </script>
+        """,
+        height=0,
+    )
 if export_as_pdf:
+    obra_nombre = str(Obra[0]) if Obra else "General"
+    fecha_archivo = datetime.datetime.now().strftime("%d-%m-%Y")
+
     class PDF(FPDF):
         # Page footer
         def header(self):
@@ -357,7 +395,7 @@ if export_as_pdf:
             self.set_font('Arial', 'B', 10)
             self.cell(35, 10, 'Nombre de la Obra:',0,0,'L')
             self.set_font('Arial', 'I', 10)
-            self.cell(90, 10, str(Obra[0]),0,0,'L')
+            self.cell(90, 10, obra_nombre,0,0,'L')
             self.ln(8)
             self.set_font('Arial', 'B', 10)
             self.cell(12, 10, 'Fecha:',0,0,'L')
@@ -515,7 +553,8 @@ if export_as_pdf:
                         pdf.ln(15)
                         x = 0
     
-    html = create_download_link(pdf.output(dest="S").encode("latin-1"), 'Obra '+str(Obra[0])+ '_'+str(today2) )
+    pdf_bytes = pdf.output(dest="S").encode("latin-1")
+    pdf_filename = f"Obra {obra_nombre}_{fecha_archivo}"
     
     firebaseConfig = {
         "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
@@ -535,6 +574,6 @@ if export_as_pdf:
     today = datetime.datetime.now()
     today3 = today.strftime("%H:%M:%S")
     today2 = today.strftime("%d-%m-%Y")
-    st.markdown(html, unsafe_allow_html=True)
+    trigger_pdf_download(pdf_bytes, pdf_filename)
    # storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
 
