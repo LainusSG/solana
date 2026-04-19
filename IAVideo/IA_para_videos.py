@@ -22,33 +22,132 @@ with col3:
 
 
 
-yolo = YOLO_Pred('./models/best.onnx',
-                  './models/data.yml')
+@st.cache_resource
+def load_yolo_model():
+    return YOLO_Pred('./models/best.onnx', './models/data.yml')
+
+
+yolo = load_yolo_model()
 
 
 lock = threading.Lock()
-img_container = {"img": None, "data": ""}
+img_container = {"img": None, "raw_img": None, "data": []}
+stream_state = {"frame_index": 0, "last_detections": [], "inference_running": False}
+
+DISPLAY_MAX_WIDTH = 1280
+INFERENCE_MAX_WIDTH = 640
+INFERENCE_INPUT_SIZE = 640
+PROCESS_EVERY_N_FRAMES = 2
+CAMERA_STARTUP_PASSTHROUGH_FRAMES = 8
+LOCAL_RTC_CONFIGURATION = RTCConfiguration({"iceServers": []})
+
+
+def resize_frame(img, max_width):
+    height, width = img.shape[:2]
+    if width <= max_width:
+        return img
+    scale = max_width / width
+    new_size = (int(width * scale), int(height * scale))
+    return cv2.resize(img, new_size, interpolation=cv2.INTER_AREA)
+
+
+def scale_detections(detections, scale_x, scale_y):
+    scaled = []
+    for detection in detections:
+        x, y, w, h = detection["box"]
+        scaled.append(
+            {
+                **detection,
+                "box": [
+                    int(x * scale_x),
+                    int(y * scale_y),
+                    int(w * scale_x),
+                    int(h * scale_y),
+                ],
+            }
+        )
+    return scaled
+
+
+def serialize_detection_labels(detections):
+    return [f'{item["class_name"]}: {int(item["confidence"] * 100)}%' for item in detections]
+
+
+def run_inference_async(display_img, inference_img):
+    try:
+        detections = yolo.detect(inference_img, input_size=INFERENCE_INPUT_SIZE)
+        if inference_img.shape[:2] != display_img.shape[:2]:
+            detections = scale_detections(
+                detections,
+                display_img.shape[1] / inference_img.shape[1],
+                display_img.shape[0] / inference_img.shape[0],
+            )
+        with lock:
+            stream_state["last_detections"] = detections
+    except cv2.error:
+        with lock:
+            stream_state["last_detections"] = []
+    finally:
+        with lock:
+            stream_state["inference_running"] = False
 
 
 
 
 def video_frame_callback(frame):
-    
-    img = frame.to_ndarray(format="bgr24")
-    
-    with lock:
-        #flipped = img[::-1,:,:]
-        [pred_img, falla_detectada] = yolo.predicciones(img)
-        img_container["img"] = pred_img
-        img_container["data"] = falla_detectada
+    source_img = frame.to_ndarray(format="bgr24")
+    display_img = resize_frame(source_img, max_width=DISPLAY_MAX_WIDTH)
+    inference_img = resize_frame(display_img, max_width=INFERENCE_MAX_WIDTH)
 
-        name = "imagenes/pred_img_obj.png"
-        cv2.imwrite(name, img) 
+    with lock:
+        stream_state["frame_index"] += 1
+        if stream_state["frame_index"] <= CAMERA_STARTUP_PASSTHROUGH_FRAMES:
+            img_container["img"] = display_img
+            img_container["raw_img"] = display_img.copy()
+            img_container["data"] = []
+            return av.VideoFrame.from_ndarray(display_img, format="bgr24")
+
+        should_run_inference = (
+            stream_state["frame_index"] % PROCESS_EVERY_N_FRAMES == 1
+            or (not stream_state["last_detections"] and not stream_state["inference_running"])
+        )
+
+        if should_run_inference and not stream_state["inference_running"]:
+            stream_state["inference_running"] = True
+            threading.Thread(
+                target=run_inference_async,
+                args=(display_img.copy(), inference_img.copy()),
+                daemon=True,
+            ).start()
+
+        pred_img = yolo.draw_detections(display_img, stream_state["last_detections"])
+        falla_detectada = serialize_detection_labels(stream_state["last_detections"])
+        img_container["img"] = pred_img
+        img_container["raw_img"] = display_img.copy()
+        img_container["data"] = falla_detectada
     return av.VideoFrame.from_ndarray(pred_img, format="bgr24")
 
 
 
-ctx = webrtc_streamer(key="example", video_frame_callback=video_frame_callback, rtc_configuration= {"iceServers": [{"urls":["stun:stun1.l.google.com:19302"]}]}, media_stream_constraints={"video":True, "audio": False})
+ctx = webrtc_streamer(
+    key="example",
+    video_frame_callback=video_frame_callback,
+    rtc_configuration=LOCAL_RTC_CONFIGURATION,
+    media_stream_constraints={
+        "video": {
+            "width": {"ideal": 1280},
+            "height": {"ideal": 720},
+            "frameRate": {"ideal": 24},
+        },
+        "audio": False,
+    },
+    async_processing=True,
+    video_html_attrs={
+        "autoPlay": True,
+        "muted": True,
+        "playsInline": True,
+    },
+)
 
 fig_place = st.empty()
 fig, ax = plt.subplots(1, 1)
@@ -129,6 +228,7 @@ def create_new_form():
             while ctx.state.playing:
                 with lock:
                     img = img_container["img"]
+                    raw_img = img_container["raw_img"]
                     for kk in img_container["data"]:
                         valor = kk.split(":")
                         if not valor[0] in total_fallas:
@@ -161,6 +261,8 @@ def create_new_form():
                                         storage = firebase.storage()
 
                                         imgw= "imagenes/pred_img_obj.png"
+                                        if raw_img is not None:
+                                            cv2.imwrite(imgw, raw_img)
 
                                         
                                         
