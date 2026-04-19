@@ -53,21 +53,21 @@ def convert(dt):
         return datetime.strptime(dt, '%m/%d/%Y').strftime('%d/%m/%Y')
     except ValueError:
         return dt
-df["fecha"] = pd.to_datetime(df["fecha"])
+df["fecha"] = pd.to_datetime(df["fecha"], errors="coerce")
 
 # Getting the min and max date 
 startDate = pd.to_datetime(df["fecha"]).min()
 endDate = pd.to_datetime(df["fecha"]).max()
 
 with col1:
-    date1 = pd.to_datetime(st.date_input("Fecha de Inicio", startDate))
+    date1 = pd.to_datetime(st.date_input("Fecha de Inicio", startDate)).normalize()
     today3 = date1.strftime("%d/%m/%Y")
 
 with col2:
-    date2 = pd.to_datetime(st.date_input("Fecha Final", endDate))
+    date2 = pd.to_datetime(st.date_input("Fecha Final", endDate)).normalize()
     today4 = date2.strftime("%d/%m/%Y")
 
-df = df[(df["fecha"] >= date1) & (df["fecha"] <= date2)].copy()
+df = df[df["fecha"].dt.normalize().between(date1, date2)].copy()
 
 ########################################################################################   
 
@@ -108,104 +108,18 @@ with col4:
 
 with col5:
     Falla = st.multiselect("Elige una Falla",df5["tipo_fallas"].unique())
-   
 
-
-
-
-
-if not Obra and not Cliente and not Tipo_de_Pieza and not Pieza  and not Falla:
-    filtered_df = df
-    
-
-##################################################################################################################
-elif not Cliente and not Tipo_de_Pieza and not Pieza and not Falla:
-    filtered_df = df[df["obra"].isin(Obra)]
-
-elif not Obra and not Tipo_de_Pieza and not Pieza and not Falla:
-    filtered_df = df[df["CLIENTE"].isin(Cliente)]
-
-elif not Falla and not Cliente and not Pieza and not Obra:
-    filtered_df = df3[df3["tipo_pieza"].isin(Tipo_de_Pieza)]
-
-elif not Obra and not Tipo_de_Pieza and not Cliente and not Falla:
-    filtered_df = df[df["pieza"].isin(Pieza)]
-
-elif not Obra and not Tipo_de_Pieza and not Cliente and not Pieza:
-    filtered_df = df[df["tipo_fallas"].isin(Falla)]
-
-##################################################################################################################
-elif Obra and Cliente:
-    filtered_df = df3[df["obra"].isin(Obra) & df3["cliente"].isin(Cliente)]
-
-elif Obra and Tipo_de_Pieza:
-    filtered_df = df3[df["obra"].isin(Obra) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
-
-elif Obra and Pieza:
-    filtered_df = df3[df["obra"].isin(Obra) & df3["pieza"].isin(Pieza)]
-
-elif Obra and Falla:
-    filtered_df = df3[df["obra"].isin(Obra) & df3["tipo_fallas"].isin(Falla)]
-
-
-##################################################################################################################
-elif Cliente and Tipo_de_Pieza:
-    filtered_df = df3[df["cliente"].isin(Cliente) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
-
-elif Cliente and Pieza:
-    filtered_df = df3[df["cliente"].isin(Cliente) & df3["pieza"].isin(Pieza)]
-
-elif Cliente and Falla:
-    filtered_df = df3[df["cliente"].isin(Cliente) & df3["tipo_fallas"].isin(Falla)]
-
-elif Cliente and Obra:
-    filtered_df = df3[df["cliente"].isin(Cliente) & df3["obra"].isin(Obra)]
-
-##################################################################################################################
-elif Tipo_de_Pieza and Cliente:
-    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["cliente"].isin(Cliente)]
-
-elif Tipo_de_Pieza and Pieza:
-    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["pieza"].isin(Pieza)]
-
-elif Tipo_de_Pieza and Falla:
-    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["tipo_fallas"].isin(Falla)]
-
-elif Tipo_de_Pieza and Obra:
-    filtered_df = df3[df["tipo_pieza"].isin(Tipo_de_Pieza) & df3["obra"].isin(Obra)]
-
-
-##################################################################################################################
-elif Pieza and Cliente:
-    filtered_df = df3[df["pieza"].isin(Pieza) & df3["cliente"].isin(Cliente)]
-
-elif Pieza and Tipo_de_Pieza:
-    filtered_df = df3[df["pieza"].isin(Pieza) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
-
-elif Pieza and Falla:
-    filtered_df = df3[df["pieza"].isin(Pieza) & df3["tipo_fallas"].isin(Falla)]
-
-elif Pieza and Obra:
-    filtered_df = df3[df["pieza"].isin(Pieza) & df3["obra"].isin(Obra)]
-
-
-##################################################################################################################
-elif Falla and Cliente:
-    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["cliente"].isin(Cliente)]
-
-elif Falla and Tipo_de_Pieza:
-    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["tipo_pieza"].isin(Tipo_de_Pieza)]
-
-elif Falla and Pieza:
-    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["pieza"].isin(Pieza)]
-
-elif Falla and Obra:
-    filtered_df = df3[df["tipo_fallas"].isin(Falla) & df3["obra"].isin(Obra)]
-
-
-##################################################################################################################
-else:
-    filtered_df = df3[df3["obra"].isin(Obra) & df3["cliente"].isin(Cliente) & df3["tipo_pieza"].isin(Tipo_de_Pieza) & df3["pieza"].isin(Pieza) & df3["tipo_fallas"].isin(Falla)]
+filtered_df = df.copy()
+if Obra:
+    filtered_df = filtered_df[filtered_df["obra"].isin(Obra)]
+if Cliente:
+    filtered_df = filtered_df[filtered_df["cliente"].isin(Cliente)]
+if Tipo_de_Pieza:
+    filtered_df = filtered_df[filtered_df["tipo_pieza"].isin(Tipo_de_Pieza)]
+if Pieza:
+    filtered_df = filtered_df[filtered_df["pieza"].isin(Pieza)]
+if Falla:
+    filtered_df = filtered_df[filtered_df["tipo_fallas"].isin(Falla)]
 
 
 ##################################################################################################################
@@ -304,6 +218,58 @@ with cl2:
         
         
 
+col1, col2 = st.columns((2))
+
+########################################################################################           
+with col1:
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Dia</p>', unsafe_allow_html=True)
+
+    linechart = (
+        filtered_df.assign(Dia=filtered_df["fecha"].dt.normalize())
+        .groupby("Dia", as_index=False)["fallas"]
+        .sum()
+        .sort_values("Dia")
+    )
+    fig10 = px.line(linechart, x = "Dia", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2", markers=True)
+    fig10.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig10.update_xaxes(tickformat="%Y-%m-%d")
+    fig10.update_traces(marker_color='#FF8000')
+    st.plotly_chart(fig10,use_container_width=True)
+
+    with st.expander("Fallas Por Dia"):
+        st.write(linechart.T.style.background_gradient(cmap="Blues"))
+        csv = linechart.to_csv(index=False).encode("utf-8")
+        st.download_button('Descargar', data = csv, file_name = "Fallas por Dia.csv", mime ='text/csv',
+                        help = 'Haz click para descargar la información')
+
+
+with col2:
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Semana</p>', unsafe_allow_html=True)
+
+    linechart = (
+        filtered_df.assign(Semana=filtered_df["fecha"].dt.to_period("W").dt.start_time)
+        .groupby("Semana", as_index=False)["fallas"]
+        .sum()
+        .sort_values("Semana")
+    )
+    fig9 = px.line(linechart, x = "Semana", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2", markers=True)
+    fig9.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig9.update_xaxes(tickformat="%Y-%m-%d")
+    fig9.update_traces(marker_color='#FF8000')
+    st.plotly_chart(fig9,use_container_width=True)
+
+    with st.expander("Fallas Por Semana"):
+        st.write(linechart.T.style.background_gradient(cmap="Blues"))
+        csv = linechart.to_csv(index=False).encode("utf-8")
+        st.download_button('Descargar', data = csv, file_name = "Fallas por Semana.csv", mime ='text/csv',
+                        help = 'Haz click para descargar la información')
+    
 
 
 
@@ -312,15 +278,48 @@ col1, col2 = st.columns((2))
 
 ########################################################################################           
 with col1:
-    filtered_df["Año"] = filtered_df["fecha"].dt.to_period("Y")
+    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Mes</p>', unsafe_allow_html=True)
+
+    linechart = (
+        filtered_df.assign(Mes=filtered_df["fecha"].dt.to_period("M").dt.to_timestamp())
+        .groupby("Mes", as_index=False)["fallas"]
+        .sum()
+        .sort_values("Mes")
+    )
+    fig6 = px.line(linechart, x = "Mes", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2", markers=True)
+    fig6.update_layout({
+    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+    fig6.update_xaxes(tickformat="%Y-%m")
+    fig6.update_traces(marker_color='#FF8000')
+    st.plotly_chart(fig6,use_container_width=True)
+
+    with st.expander("Fallas Por Mes"):
+        st.write(linechart.T.style.background_gradient(cmap="Blues"))
+        csv = linechart.to_csv(index=False).encode("utf-8")
+        st.download_button('Descargar', data = csv, file_name = "Fallas por Mes.csv", mime ='text/csv',
+                        help = 'Haz click para descargar la información')
+    
+
+
+
+########################################################################################           
+with col2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Año</p>', unsafe_allow_html=True)
 
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Año"].dt.strftime("%Y"))["fallas"].sum()).reset_index()
-    fig5 = px.line(linechart, x = "Año", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
+    linechart = (
+        filtered_df.assign(Anio=filtered_df["fecha"].dt.to_period("Y").dt.to_timestamp())
+        .groupby("Anio", as_index=False)["fallas"]
+        .sum()
+        .sort_values("Anio")
+    )
+    fig5 = px.line(linechart, x = "Anio", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2", markers=True)
     fig5.update_layout({
     'plot_bgcolor': 'rgba(0, 0, 0, 0)',
     'paper_bgcolor': 'rgba(0, 0, 0, 0)',
     })
+    fig5.update_xaxes(tickformat="%Y")
     fig5.update_traces(marker_color='#FF8000')
     st.plotly_chart(fig5,use_container_width=True)
 
@@ -331,72 +330,9 @@ with col1:
                         help = 'Haz click para descargar la información')
 
 
-
-########################################################################################           
-with col2:
-    filtered_df["Mes"] = filtered_df["fecha"].dt.to_period("M")
-    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Mes</p>', unsafe_allow_html=True)
-
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Mes"].dt.strftime("%B"))["fallas"].sum()).reset_index()
-    fig6 = px.line(linechart, x = "Mes", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
-    fig6.update_layout({
-    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    fig6.update_traces(marker_color='#FF8000')
-    st.plotly_chart(fig6,use_container_width=True)
-
-    with st.expander("Fallas Por Mes"):
-        st.write(linechart.T.style.background_gradient(cmap="Blues"))
-        csv = linechart.to_csv(index=False).encode("utf-8")
-        st.download_button('Descargar', data = csv, file_name = "Fallas por Mes.csv", mime ='text/csv',
-                        help = 'Haz click para descargar la información')
-
-
 ########################################################################################   
 
 
-col1, col2 = st.columns((2))
-
-########################################################################################           
-with col1:
-    filtered_df["Semana"] = filtered_df["fecha"].dt.to_period("W")
-    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Semana</p>', unsafe_allow_html=True)
-
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Semana"].dt.strftime("%W"))["fallas"].sum()).reset_index()
-    fig9 = px.line(linechart, x = "Semana", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
-    fig9.update_layout({
-    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    fig9.update_traces(marker_color='#FF8000')
-    st.plotly_chart(fig9,use_container_width=True)
-
-    with st.expander("Fallas Por Semana"):
-        st.write(linechart.T.style.background_gradient(cmap="Blues"))
-        csv = linechart.to_csv(index=False).encode("utf-8")
-        st.download_button('Descargar', data = csv, file_name = "Fallas por Semana.csv", mime ='text/csv',
-                        help = 'Haz click para descargar la información')
-
-
-with col2:
-    filtered_df["Dia"] = filtered_df["fecha"].dt.to_period("D")
-    st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Dia</p>', unsafe_allow_html=True)
-
-    linechart = pd.DataFrame(filtered_df.groupby(filtered_df["Dia"].dt.strftime("%D"))["fallas"].sum()).reset_index()
-    fig10 = px.line(linechart, x = "Dia", y="fallas", labels = {"fallas": "Cantidad"},height=500, width = 1000,template="ggplot2")
-    fig10.update_layout({
-    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    })
-    fig10.update_traces(marker_color='#FF8000')
-    st.plotly_chart(fig10,use_container_width=True)
-
-    with st.expander("Fallas Por Dia"):
-        st.write(linechart.T.style.background_gradient(cmap="Blues"))
-        csv = linechart.to_csv(index=False).encode("utf-8")
-        st.download_button('Descargar', data = csv, file_name = "Fallas por Dia.csv", mime ='text/csv',
-                        help = 'Haz click para descargar la información')
 
 
 
@@ -708,3 +644,4 @@ if export_as_pdf:
 
     st.markdown(html, unsafe_allow_html=True)
    # storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
+
