@@ -574,61 +574,106 @@ if export_as_pdf:
     pdf.cell(35,10,'',0,2)
     pdf.cell(20)
 
-
-
-
-
-
     x=0
     y=0
     pdf.add_page()
     pdf.ln(15)
     columnNameList = list(fotos)
     columnNameList2 = list(piezas)
-    for row in range(0, len (fotos)):
+
+
+    import os
+    import requests
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from hashlib import md5
+
+    TEMP_DIR = "temp_images"
+    os.makedirs(TEMP_DIR, exist_ok=True)
+
+    session = requests.Session()
+    image_cache = {}  # url -> local_path
+
+
+    def download_image_fast(url):
+        if not url.startswith("http"):
+            return url
+
+        if url in image_cache:
+            return image_cache[url]
+
+        try:
+            ext = url.split('.')[-1].split('?')[0]
+            filename = md5(url.encode()).hexdigest() + "." + ext
+            path = os.path.join(TEMP_DIR, filename)
+
+            if os.path.exists(path):
+                image_cache[url] = path
+                return path
+
+            r = session.get(url, timeout=5, stream=True)
+            r.raise_for_status()
+
+            if not r.headers.get("Content-Type", "").startswith("image"):
+                return None
+
+            with open(path, "wb") as f:
+                for chunk in r.iter_content(8192):
+                    f.write(chunk)
+
+            image_cache[url] = path
+            return path
+
+        except:
+            return None
+        
+    urls = set()
+
+    for col in columnNameList:
+        urls.update(fotos[col].dropna().astype(str))
+
+    urls = [u for u in urls if u.startswith("http")]
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = [executor.submit(download_image_fast, url) for url in urls]
+        for _ in as_completed(futures):
+            pass
+
+
+
+            
+    for row in range(len(fotos)):
         for col_num2, col_name2 in enumerate(columnNameList2):
             for col_num, col_name in enumerate(columnNameList):
-                if col_num != len(columnNameList) - 1 :
-                    pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
-                else: 
-                    pdf.image(str(fotos['%s' % (col_name)].iloc[row]), pdf.get_x(), pdf.get_y(), 90, 70, 'PNG')
+
+                img_value = str(fotos[col_name].iloc[row])
+                img_path = download_image_fast(img_value)
+
+                if img_path:
+                    pdf.image(img_path, pdf.get_x(), pdf.get_y(), 90, 70)
+                else:
+                    pdf.rect(pdf.get_x(), pdf.get_y(), 90, 70)
+                    pdf.set_font('Arial', '', 8)
+                    pdf.text(pdf.get_x()+5, pdf.get_y()+35, "Imagen no disponible")
+
+                if col_num == len(columnNameList) - 1:
                     pdf.set_font('Arial', '', 12)
-                    pdf.text(pdf.get_x(), pdf.get_y()+75, str(piezas['%s' % (col_name2)].iloc[row]))
-                    if x < 5: 
+                    pdf.text(
+                        pdf.get_x(),
+                        pdf.get_y() + 75,
+                        str(piezas[col_name2].iloc[row])
+                    )
+
+                    if x < 5:
                         pdf.cell(105)
-                        x=x+1
-                        
-                    if x==2: 
+                        x += 1
+
+                    if x == 2:
                         pdf.ln(90)
-                    if x==4: 
+
+                    if x == 4:
                         pdf.add_page()
                         pdf.ln(15)
-                        x=0
-                        
-                    
-                
-                
-                    
-                    
-                    
-
-               
-
-                   
-
-                
-                    
-                    
-                
-                
-                
-                
-
-
-
-   
-    
-    
+                        x = 0
     
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), 'Obra '+str(Obra[0])+ '_'+str(today2) )
     
@@ -662,13 +707,4 @@ if export_as_pdf:
     
 
     st.markdown(html, unsafe_allow_html=True)
-    storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
-
-
-
-
-
-
-
-
-
+   # storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
