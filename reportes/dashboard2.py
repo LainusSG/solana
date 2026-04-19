@@ -6,11 +6,13 @@ import warnings
 from fpdf import FPDF
 import base64
 import datetime
-
 import plotly.figure_factory as ff
 import time 
-
-
+import os
+import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from hashlib import md5
+import pyrebase
 
 warnings.filterwarnings('ignore')
 
@@ -27,26 +29,10 @@ with col2:
 with col3:
     st.write("")
 
-# fl = st.file_uploader(":file_folder: Subir Archivo!",type=(["csv","txt","xlsx","xls"]))
-# if fl is not None:
-#     filename = fl.name
-#     st.write(filename)
-#     df = pd.read_csv(filename, encoding = "ISO-8859-1")
-# else:
-    #os.chdir(r"reportes")
-
-
-
-########################################################################################   
-########################################################################################   
-########################################################################################   
+  
 conn = st.connection("postgresql", type="sql")
-#df = pd.read_csv("reportes/Graficas3.csv", encoding = "ISO-8859-1")
 df= conn.query('select * from soldadura;', ttl="1s")
 
-
-########################################################################################   
-    
 col1, col2 = st.columns((2))
 def convert(dt):
     try:
@@ -69,12 +55,9 @@ with col2:
 
 df = df[df["fecha"].dt.normalize().between(date1, date2)].copy()
 
-########################################################################################   
 
 col1, col2, col3, col4, col5 = st.columns((5))
 
-
-# Create for Obra
 
 with col1:
     Obra = st.multiselect("Elige una Obra", df["obra"].unique())
@@ -83,7 +66,6 @@ with col1:
     else:
         df2 = df[df["obra"].isin(Obra)]
 
-# Create for Tipo de Fallas
 with col2:
     Cliente = st.multiselect("Elige un Cliente", df2["cliente"].unique())
     if not Cliente:
@@ -91,7 +73,6 @@ with col2:
     else:
         df3 = df2[df2["cliente"].isin(Cliente)]
 
-# Create for Tipo de Pieza
 with col3:
     Tipo_de_Pieza = st.multiselect("Elige un Material",df3["tipo_pieza"].unique())
     if not Tipo_de_Pieza:
@@ -122,15 +103,12 @@ if Falla:
     filtered_df = filtered_df[filtered_df["tipo_fallas"].isin(Falla)]
 
 
-##################################################################################################################
 category_df = filtered_df.groupby(by = ["tipo_pieza"], as_index = False)["fallas"].sum()
 
 category2_df = filtered_df.groupby(by = ["obra"], as_index = False)["fallas"].sum()
 
 category3_df = filtered_df.groupby(by = ["pieza"], as_index = False)["fallas"].sum()
 
-
-##################################################################################################################
 with st.expander("Fallas en Obras"):
     fig12 = px.bar(category2_df, x = "obra", y = "fallas",
                     template ="ggplot2")
@@ -196,7 +174,6 @@ with chart2:
     })
     st.plotly_chart(fig4,use_container_width=True)
 
-########################################################################################   
 cl1, cl2 = st.columns((2))
 with cl1:
     with st.expander("Fallas por PIeza"):
@@ -204,9 +181,6 @@ with cl1:
         csv = category_df.to_csv(index = False).encode('utf-8')
         st.download_button("Descargar", data = csv, file_name = "Tipo de Pieza.csv", mime = "text/csv",
                             help = 'Haz click para descargar la información')
-        
-        
-        
     
 with cl2:
     with st.expander("Fallas por Tipo de Soldadura"):
@@ -215,12 +189,8 @@ with cl2:
         csv = calificacion.to_csv(index = False).encode('utf-8')
         st.download_button("Descargar", data = csv, file_name = "Categoria.csv", mime = "text/csv",
                         help = 'Haz click para descargar la información')
-        
-        
 
-col1, col2 = st.columns((2))
-
-########################################################################################           
+col1, col2 = st.columns((2))    
 with col1:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Dia</p>', unsafe_allow_html=True)
 
@@ -245,7 +215,6 @@ with col1:
         st.download_button('Descargar', data = csv, file_name = "Fallas por Dia.csv", mime ='text/csv',
                         help = 'Haz click para descargar la información')
 
-
 with col2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Semana</p>', unsafe_allow_html=True)
 
@@ -269,14 +238,8 @@ with col2:
         csv = linechart.to_csv(index=False).encode("utf-8")
         st.download_button('Descargar', data = csv, file_name = "Fallas por Semana.csv", mime ='text/csv',
                         help = 'Haz click para descargar la información')
-    
 
-
-
-
-col1, col2 = st.columns((2))
-
-########################################################################################           
+col1, col2 = st.columns((2))   
 with col1:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Mes</p>', unsafe_allow_html=True)
 
@@ -300,11 +263,7 @@ with col1:
         csv = linechart.to_csv(index=False).encode("utf-8")
         st.download_button('Descargar', data = csv, file_name = "Fallas por Mes.csv", mime ='text/csv',
                         help = 'Haz click para descargar la información')
-    
-
-
-
-########################################################################################           
+          
 with col2:
     st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas por Año</p>', unsafe_allow_html=True)
 
@@ -329,14 +288,6 @@ with col2:
         st.download_button('Descargar', data = csv, file_name = "Fallas por Año.csv", mime ='text/csv',
                         help = 'Haz click para descargar la información')
 
-
-########################################################################################   
-
-
-
-
-
-
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;"> Fallas</p>', unsafe_allow_html=True)
 with st.expander("Organización de Fallas"):
     fig7 = px.treemap(filtered_df, path = ["categoria","tipo_fallas","tipo_pieza", "calificacion"], values = "fallas",hover_data = ["fallas"],template="presentation")
@@ -346,9 +297,6 @@ with st.expander("Organización de Fallas"):
         'paper_bgcolor': 'rgba(0, 0, 0, 0)',
         })
     st.plotly_chart(fig7, use_container_width=True)
-
-
-########################################################################################   
 
 st.write('<p style="font-size:25px; font-weight:bold; text-align:center;">Tabla de Datos</p>', unsafe_allow_html=True)
 with st.expander("Reporte de Obra"):
@@ -371,7 +319,6 @@ with st.expander("Reporte de Obra"):
     fotos = filtered_df[["link"]]
     piezas = filtered_df[["pieza"]]
 
-######################################################################################## 
 st.write("")
 st.write("")
 st.write("")
@@ -390,8 +337,6 @@ with col4:
 with col5:
     st.write("")
 
-
-
 fig1.write_image("reportes/images/fig1.png")
 fig2.write_image("reportes/images/fig2.png")
 fig3.write_image("reportes/images/fig3.png")
@@ -400,34 +345,24 @@ fig9.write_image("reportes/images/fig5.png")
 fig10.write_image("reportes/images/fig6.png")
 fig8.write_image("reportes/images/fig7.png")
 
-
-
 def create_download_link(val, filename):
     b64 = base64.b64encode(val)  # val looks like b'...'
     return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{filename}.pdf">Descargar PDF</a>'
-
-
-
-
-
 if export_as_pdf:
     class PDF(FPDF):
         # Page footer
         def header(self):
-            # Position at 1.5 cm from bottom
             self.image('reportes/images/ENCABEZADOSOLANA.png',0, 0, 217, 0, 'PNG')
             self.ln(34)
             self.set_font('Arial', 'B', 10)
             self.cell(35, 10, 'Nombre de la Obra:',0,0,'L')
             self.set_font('Arial', 'I', 10)
             self.cell(90, 10, str(Obra[0]),0,0,'L')
-             
             self.ln(8)
             self.set_font('Arial', 'B', 10)
             self.cell(12, 10, 'Fecha:',0,0,'L')
             self.set_font('Arial', 'I', 10)
             self.cell(90, 10, str(today2) ,0,0,'L')
-            
             self.ln(8)
             self.set_font('Arial', 'B', 10)
             self.cell(112, 10, '' ,0,0,'L')
@@ -439,29 +374,17 @@ if export_as_pdf:
             pdf.ln(10)
             
         def footer(self):
-            # Position at 1.5 cm from bottom
             self.set_y(-15)
-            # Arial italic 8
             self.set_font('Arial', 'I', 8)
-            # Page number
             self.cell(0, 10, 'Página ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
-
-    # Instantiation of inherited class
     pdf = PDF('P','mm','Letter')
     pdf.alias_nb_pages()
     pdf.add_page()
-    
-   
-    
-    
-
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(190, 10, 'Fallas por Pieza',0,0,'L')
     pdf.ln(8)
     pdf.image('reportes/images/fig1.png', 20, 77, 90, 0, 'PNG')
     pdf.image('reportes/images/fig3.png', 100, 77, 90, 0, 'PNG')
-    
-    
     pdf.ln(65)
     pdf.cell(190, 10, 'Fallas por Tipo de Soldadura',0,0,'L')
     pdf.image('reportes/images/fig2.png', 20, 150, 90, 0, 'PNG')
@@ -472,16 +395,10 @@ if export_as_pdf:
     pdf.cell(190, 10, 'Fallas Semanales y Diarias',0,0,'L')
     pdf.image('reportes/images/fig5.png', 20, 220, 90, 0, 'PNG')
     pdf.image('reportes/images/fig6.png', 105, 220, 90, 0, 'PNG')
-    
-    
-    
     pdf.add_page()
-        
-
     pdf.set_font('Arial', 'B', 10)
     pdf.cell(190, 10, 'Reporte de Obra',0,0,'L')
     pdf.ln(13)
-    
     pdf.set_font('Arial', 'B', 6)
     pdf.set_fill_color(255, 178, 102)
     pdf.cell(19.6,10, 'Fecha', 1,0,'C', True)
@@ -495,7 +412,6 @@ if export_as_pdf:
     pdf.cell(19.6,10, 'Calificación', 1,0,'C', True)
     pdf.cell(19.6,10, 'Fallas', 1,0,'C', True)
     pdf.ln()
-    
     pdf.set_font('Arial', '', 4)
 
     columnNameList = list(df_sample)
@@ -506,10 +422,8 @@ if export_as_pdf:
             else: 
                 pdf.cell(19.6,10, str(df_sample['%s' % (col_name)].iloc[row]), 1,2,'C')
                 pdf.cell(-176.4)
-                
     pdf.cell(35,10,'',0,2)
     pdf.cell(20)
-
     x=0
     y=0
     pdf.add_page()
@@ -517,18 +431,11 @@ if export_as_pdf:
     columnNameList = list(fotos)
     columnNameList2 = list(piezas)
 
-
-    import os
-    import requests
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    from hashlib import md5
-
     TEMP_DIR = "temp_images"
     os.makedirs(TEMP_DIR, exist_ok=True)
 
     session = requests.Session()
-    image_cache = {}  # url -> local_path
-
+    image_cache = {} 
 
     def download_image_fast(url):
         if not url.startswith("http"):
@@ -574,9 +481,6 @@ if export_as_pdf:
         for _ in as_completed(futures):
             pass
 
-
-
-            
     for row in range(len(fotos)):
         for col_num2, col_name2 in enumerate(columnNameList2):
             for col_num, col_name in enumerate(columnNameList):
@@ -613,10 +517,6 @@ if export_as_pdf:
     
     html = create_download_link(pdf.output(dest="S").encode("latin-1"), 'Obra '+str(Obra[0])+ '_'+str(today2) )
     
-
-    import pyrebase
-
-    ## configuraciones de la base de datos
     firebaseConfig = {
         "apiKey": "AIzaSyB3XiVjsPQMnlr4atYjU2xnL-NX9fk_2Mg",
         "authDomain": "solanaia.firebaseapp.com",
@@ -630,18 +530,11 @@ if export_as_pdf:
 
     firebase = pyrebase.initialize_app(firebaseConfig )
     storage = firebase.storage()
-
-
-
     #pred_img_obj.save("imagenes/pred_img_obj.png")
     #imgw= "imagenes/pred_img_obj.png"
-
     today = datetime.datetime.now()
     today3 = today.strftime("%H:%M:%S")
     today2 = today.strftime("%d-%m-%Y")
-
-    
-
     st.markdown(html, unsafe_allow_html=True)
    # storage.child('REPORTE/'+'Obra '+str(Obra[0])+ '_'+str(today2) ).put(pdf.output(dest="S").encode("latin-1"))
 
